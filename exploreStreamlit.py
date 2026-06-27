@@ -1,13 +1,37 @@
 """PO Twin — Streamlit app for LinkedIn showcase."""
 
+from pathlib import Path
+
 import streamlit as st
 from dotenv import load_dotenv
 
-from persona import PERSONA, SAMPLE_QUESTIONS, get_avatar, has_avatar_image, respond
-
-ASSISTANT_AVATAR = get_avatar()
+from persona import PERSONA, SAMPLE_QUESTIONS, respond
 
 load_dotenv()
+
+# Avatar — kept here so cloud deploy never depends on persona.py exports
+_APP_ROOT = Path(__file__).resolve().parent
+_AVATAR_CANDIDATES = (
+    _APP_ROOT / "assets" / "avatar.jpg",
+    _APP_ROOT / "assets" / "avatar.png",
+    _APP_ROOT / "assets" / "avatar.jpeg",
+    _APP_ROOT / "assets" / "avatar.webp",
+)
+AVATAR_FALLBACK = "🎯"
+
+
+def get_avatar() -> str:
+    for path in _AVATAR_CANDIDATES:
+        if path.is_file():
+            return str(path)
+    return AVATAR_FALLBACK
+
+
+def has_avatar_image() -> bool:
+    return get_avatar() != AVATAR_FALLBACK
+
+
+ASSISTANT_AVATAR = get_avatar()
 
 # ---------------------------------------------------------------------------
 # Page config & styling
