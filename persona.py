@@ -5,7 +5,29 @@ from __future__ import annotations
 import os
 import re
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Optional
+
+_APP_ROOT = Path(__file__).resolve().parent
+_AVATAR_CANDIDATES = (
+    _APP_ROOT / "assets" / "avatar.jpg",
+    _APP_ROOT / "assets" / "avatar.png",
+    _APP_ROOT / "assets" / "avatar.jpeg",
+    _APP_ROOT / "assets" / "avatar.webp",
+)
+AVATAR_FALLBACK = "🎯"
+
+
+def get_avatar() -> str:
+    """Local photo path for Streamlit, or emoji if no file is present."""
+    for path in _AVATAR_CANDIDATES:
+        if path.is_file():
+            return str(path)
+    return AVATAR_FALLBACK
+
+
+def has_avatar_image() -> bool:
+    return get_avatar() != AVATAR_FALLBACK
 
 # ---------------------------------------------------------------------------
 # Persona profile (grounded in Shrirang's CV & certifications)
@@ -14,7 +36,7 @@ from typing import Optional
 PERSONA = {
     "name": "Shrirang Deshpande",
     "title": "Product Owner",
-    "tagline": "Telecom BSS · Digital Transformation · 16+ years",
+    "tagline": "Telecom BSS · Digital Transformation . AI Enthusiast",
     "linkedin": "https://www.linkedin.com/in/shrirang-deshpande-14870034/",
     "email": "shrirang09@gmail.com",
     "location": "Reading, UK",

@@ -3,7 +3,9 @@
 import streamlit as st
 from dotenv import load_dotenv
 
-from persona import PERSONA, SAMPLE_QUESTIONS, respond
+from persona import PERSONA, SAMPLE_QUESTIONS, get_avatar, has_avatar_image, respond
+
+ASSISTANT_AVATAR = get_avatar()
 
 load_dotenv()
 
@@ -30,6 +32,12 @@ st.markdown(
     }
     .sample-btn { margin-bottom: 0.35rem; }
     div[data-testid="stSidebar"] { background: #f8fafc; }
+    div[data-testid="stSidebar"] [data-testid="stImage"] img,
+    .header-avatar [data-testid="stImage"] img {
+        border-radius: 50%;
+        border: 3px solid #e2e8f0;
+        object-fit: cover;
+    }
     .footer-note { color: #94a3b8; font-size: 0.8rem; margin-top: 2rem; }
 </style>
 """,
@@ -41,7 +49,15 @@ st.markdown(
 # ---------------------------------------------------------------------------
 
 with st.sidebar:
-    st.markdown("### About this twin")
+    if has_avatar_image():
+        st.image(ASSISTANT_AVATAR, width=140)
+    else:
+        st.markdown(
+            f"<p style='text-align:center;font-size:3rem;margin:0.5rem 0'>{ASSISTANT_AVATAR}</p>",
+            unsafe_allow_html=True,
+        )
+        st.caption("Add `assets/avatar.jpg` for your photo")
+    st.markdown("### My Digital Twin")
     st.markdown(
         f"**{PERSONA['name']}**  \n"
         f"{PERSONA['title']}  \n"
@@ -73,9 +89,15 @@ with st.sidebar:
 # Main content
 # ---------------------------------------------------------------------------
 
-col_title, col_status = st.columns([4, 1])
+col_av, col_title, col_status = st.columns([1, 4, 1])
+with col_av:
+    if has_avatar_image():
+        with st.container():
+            st.markdown('<div class="header-avatar">', unsafe_allow_html=True)
+            st.image(ASSISTANT_AVATAR, width=72)
+            st.markdown("</div>", unsafe_allow_html=True)
 with col_title:
-    st.markdown('<p class="main-header">🎯 AI Product Owner Twin</p>', unsafe_allow_html=True)
+    st.markdown('<p class="main-header">AI Product Owner Twin</p>', unsafe_allow_html=True)
     st.markdown(
         '<p class="sub-header">Ask product, BSS, or digital-twin questions — '
         "answered the way a senior Telecom PO would.</p>",
@@ -103,7 +125,10 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 for message in st.session_state.messages:
-    with st.chat_message(message["role"], avatar="🎯" if message["role"] == "assistant" else None):
+    with st.chat_message(
+        message["role"],
+        avatar=ASSISTANT_AVATAR if message["role"] == "assistant" else None,
+    ):
         st.markdown(message["content"])
         if message["role"] == "assistant" and message.get("mode"):
             st.caption(f"via {message['mode']} engine")
@@ -118,7 +143,7 @@ if prompt:
         st.markdown(prompt)
     st.session_state.messages.append({"role": "user", "content": prompt})
 
-    with st.chat_message("assistant", avatar="🎯"):
+    with st.chat_message("assistant", avatar=ASSISTANT_AVATAR):
         with st.spinner("Thinking like a PO..."):
             content, mode = respond(prompt, st.session_state.messages, use_ai=use_ai)
         st.markdown(content)
