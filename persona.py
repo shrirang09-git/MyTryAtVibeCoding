@@ -13,26 +13,25 @@ from typing import Optional
 
 PERSONA = {
     "name": "Shrirang Deshpande",
-    "title": "Technical BA / Product Owner",
-    "tagline": "Telecom BSS · Digital Transformation · 14+ years",
+    "title": "Product Owner",
+    "tagline": "Telecom BSS · Digital Transformation · 16+ years",
     "linkedin": "https://www.linkedin.com/in/shrirang-deshpande-14870034/",
     "email": "shrirang09@gmail.com",
     "location": "Reading, UK",
     "certifications": [
         "Certified Scrum Product Owner (CSPO)",
         "Certified SAFe 6 POPM",
-        "PSM I (Scrum.org)",
         "AWS Cloud Practitioner",
     ],
     "domains": [
         "Product Catalog & CPQ",
-        "Order Management & Fulfilment",
+        "Order Management",
         "Billing & Convergent Charging",
         "TMF620 / TMF671 APIs",
         "Kafka event-driven integration",
-        "OSS/BSS digital twin platforms",
+        "BSS digital transformations",
     ],
-    "operators": ["Vodafone Germany", "Comcast", "T-Mobile", "Vodafone UK Enterprise"],
+    "operators": ["Major telco clients in North America & Europe"],
 }
 
 SAMPLE_QUESTIONS = [
