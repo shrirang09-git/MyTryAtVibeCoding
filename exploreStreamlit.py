@@ -81,7 +81,7 @@ with st.sidebar:
             unsafe_allow_html=True,
         )
         st.caption("Add `assets/avatar.jpg` for your photo")
-    st.markdown("### My Digital Twin")
+    st.markdown("### Meet My Digital Twin")
     st.markdown(
         f"**{PERSONA['name']}**  \n"
         f"{PERSONA['title']}  \n"
