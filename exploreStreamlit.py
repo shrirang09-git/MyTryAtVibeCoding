@@ -61,11 +61,23 @@ st.markdown(
         margin: 0.15rem 0.25rem 0.15rem 0;
     }
     .sample-btn { margin-bottom: 0.35rem; }
-    div[data-testid="stSidebar"] { background: #f8fafc; border-right: 1px solid #e2e8f0; }
+
+    /* Dark navy sidebar for contrast against the white main pane */
+    div[data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #0f172a 0%, #1e2a47 100%);
+        border-right: 1px solid #1e293b;
+    }
+    div[data-testid="stSidebar"] * { color: #e2e8f0; }
+    div[data-testid="stSidebar"] h3 { color: #ffffff; }
+    div[data-testid="stSidebar"] strong { color: #ffffff; }
+    div[data-testid="stSidebar"] hr { border-color: rgba(255, 255, 255, 0.14); }
+    div[data-testid="stSidebar"] [data-testid="stCaptionContainer"] { color: #94a3b8 !important; }
+    div[data-testid="stSidebar"] .stToggle label p { color: #e2e8f0 !important; }
+
     div[data-testid="stSidebar"] [data-testid="stImage"] img,
     .header-avatar [data-testid="stImage"] img {
         border-radius: 50%;
-        border: 3px solid #bfdbfe;
+        border: 3px solid #3b82f6;
         object-fit: cover;
     }
     .footer-note { color: #94a3b8; font-size: 0.8rem; margin-top: 2rem; }
