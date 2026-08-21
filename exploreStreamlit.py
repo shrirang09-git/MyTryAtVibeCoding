@@ -93,6 +93,13 @@ with st.sidebar:
         f"{PERSONA['title']}  \n"
         f"{PERSONA['tagline']}"
     )
+
+    use_ai = st.toggle(
+        "Use AI (OpenAI)",
+        value=bool(__import__("os").getenv("OPENAI_API_KEY")),
+        help="Requires OPENAI_API_KEY in secrets. Falls back to knowledge base if off or unavailable.",
+    )
+
     st.divider()
     st.markdown("**Certifications**")
     for cert in PERSONA["certifications"]:
@@ -109,27 +116,24 @@ with st.sidebar:
     st.link_button("Connect on LinkedIn", PERSONA["linkedin"], use_container_width=True)
     st.caption(f"📍 {PERSONA['location']}")
 
-    use_ai = st.toggle(
-        "Use AI (OpenAI)",
-        value=bool(__import__("os").getenv("OPENAI_API_KEY")),
-        help="Requires OPENAI_API_KEY in secrets. Falls back to knowledge base if off or unavailable.",
-    )
-
-    st.divider()
-    mode = st.radio(
-        "Mode",
-        options=["PO Deep-Dive", "Recruiter Screening"],
-        help=(
-            "PO Deep-Dive: structured product-thinking answers on backlog, requirements, "
-            "BSS/OSS, digital twins, Agile.\n\n"
-            "Recruiter Screening: conversational, first-person answers to common screening "
-            "questions — background, visa status, why leaving, notice period, etc."
-        ),
-    )
-
 # ---------------------------------------------------------------------------
 # Main content
 # ---------------------------------------------------------------------------
+
+# Mode switch — pinned at the very top of the main page so it's visible
+# immediately, even if the sidebar is collapsed (e.g. embedded/mobile views).
+mode = st.radio(
+    "Mode",
+    options=["PO Deep-Dive", "Recruiter Screening"],
+    horizontal=True,
+    help=(
+        "PO Deep-Dive: structured product-thinking answers on backlog, requirements, "
+        "BSS/OSS, digital twins, Agile.\n\n"
+        "Recruiter Screening: conversational, first-person answers to common screening "
+        "questions — background, visa status, why leaving, notice period, etc."
+    ),
+)
+st.divider()
 
 col_av, col_title, col_status = st.columns([1, 4, 1])
 with col_av:
