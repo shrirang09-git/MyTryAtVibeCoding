@@ -120,19 +120,43 @@ with st.sidebar:
 # Main content
 # ---------------------------------------------------------------------------
 
-# Mode switch — pinned at the very top of the main page so it's visible
-# immediately, even if the sidebar is collapsed (e.g. embedded/mobile views).
-mode = st.radio(
-    "Mode",
-    options=["PO Deep-Dive", "Recruiter Screening"],
-    horizontal=True,
-    help=(
-        "PO Deep-Dive: structured product-thinking answers on backlog, requirements, "
-        "BSS/OSS, digital twins, Agile.\n\n"
-        "Recruiter Screening: conversational, first-person answers to common screening "
-        "questions — background, visa status, why leaving, notice period, etc."
-    ),
+# Mode switch — pinned at the very top of the main page as two big buttons,
+# visible immediately even if the sidebar is collapsed (e.g. embedded/mobile).
+if "mode" not in st.session_state:
+    st.session_state.mode = "Recruiter Screening"
+
+st.markdown(
+    """
+<style>
+    div[data-testid="stHorizontalBlock"] .stButton button {
+        height: 3.2rem;
+        font-size: 1.05rem;
+        font-weight: 600;
+    }
+</style>
+""",
+    unsafe_allow_html=True,
 )
+
+mode_col1, mode_col2 = st.columns(2)
+with mode_col1:
+    if st.button(
+        "🎙️ Recruiter Screening",
+        use_container_width=True,
+        type="primary" if st.session_state.mode == "Recruiter Screening" else "secondary",
+    ):
+        st.session_state.mode = "Recruiter Screening"
+        st.rerun()
+with mode_col2:
+    if st.button(
+        "🎯 PO Deep-Dive",
+        use_container_width=True,
+        type="primary" if st.session_state.mode == "PO Deep-Dive" else "secondary",
+    ):
+        st.session_state.mode = "PO Deep-Dive"
+        st.rerun()
+
+mode = st.session_state.mode
 st.divider()
 
 col_av, col_title, col_status = st.columns([1, 4, 1])
