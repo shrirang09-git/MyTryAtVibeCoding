@@ -53,22 +53,22 @@ st.set_page_config(
 st.markdown(
     """
 <style>
-    .main-header { font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem; }
-    .sub-header { color: #64748b; font-size: 1rem; margin-bottom: 1.5rem; }
+    .main-header { font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem; color: #0f766e; }
+    .sub-header { color: #0d9488; font-size: 1rem; margin-bottom: 1.5rem; }
     .cred-badge {
-        display: inline-block; background: #f1f5f9; color: #334155;
+        display: inline-block; background: #ccfbf1; color: #0f766e;
         padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.75rem;
         margin: 0.15rem 0.25rem 0.15rem 0;
     }
     .sample-btn { margin-bottom: 0.35rem; }
-    div[data-testid="stSidebar"] { background: #f8fafc; }
+    div[data-testid="stSidebar"] { background: #ccfbf1; }
     div[data-testid="stSidebar"] [data-testid="stImage"] img,
     .header-avatar [data-testid="stImage"] img {
         border-radius: 50%;
-        border: 3px solid #e2e8f0;
+        border: 3px solid #5eead4;
         object-fit: cover;
     }
-    .footer-note { color: #94a3b8; font-size: 0.8rem; margin-top: 2rem; }
+    .footer-note { color: #5eead4; font-size: 0.8rem; margin-top: 2rem; }
 </style>
 """,
     unsafe_allow_html=True,
