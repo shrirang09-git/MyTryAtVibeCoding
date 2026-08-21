@@ -222,7 +222,11 @@ chat_placeholder = (
     if is_screening
     else "Ask about prioritisation, requirements, BSS/OSS, digital twin, Agile..."
 )
-prompt = st.session_state.pop("pending_prompt", None) or st.chat_input(chat_placeholder)
+# st.chat_input() must be called unconditionally on every run, or the widget
+# vanishes for the rest of the session — see project notes on this gotcha.
+chat_prompt = st.chat_input(chat_placeholder)
+pending_prompt = st.session_state.pop("pending_prompt", None)
+prompt = pending_prompt or chat_prompt
 
 if prompt:
     with st.chat_message("user"):
