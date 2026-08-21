@@ -287,6 +287,225 @@ DEFAULT_RESPONSE = """**Recommendation:** Start by clarifying the **objective** 
 *Try: "How do you prioritise when stakeholders disagree?" or "What is a digital twin in telecom?"*"""
 
 # ---------------------------------------------------------------------------
+# Recruiter screening mode — humanized, first-person, grounded strictly in
+# Shrirang's own provided answers. Distinct tone from the PO knowledge base:
+# conversational, no bullets/headers, like a real 30-min phone screen.
+# ---------------------------------------------------------------------------
+
+SCREENING_FACTS = {
+    "background": (
+        "I'm Shrirang. I was born and raised in India, studied there, and joined Amdocs "
+        "straight out of university back in 2009 — I've actually been with them ever since. "
+        "I started out as a tester, and over the years worked my way up through business "
+        "analysis and eventually into Product Owner and Product Manager roles. Along the way "
+        "I've worked across some great programmes — I led the full prepaid, postpaid, and "
+        "wireline product lifecycle for T-Mobile Montenegro, from solutioning right through to "
+        "production and post-production support. Then I moved to Vodafone UK, where I led the "
+        "migration of B2B products like IPVPN and SD-WAN off legacy systems — that was a "
+        "genuinely successful migration. I also got the chance to build an in-house product "
+        "from scratch — discovery, solutioning, pre-sales, all the way to production. After "
+        "that I moved to Vodafone Germany, where I owned the full catalog implementation for "
+        "the fixed-line business, including third-party API integrations. And most recently "
+        "I've led the CPQ and B2B implementation for Comcast, where I own a portfolio of about "
+        "20 products end-to-end, from development through to production."
+    ),
+    "visa": (
+        "I'm not going to be a visa headache for anyone — I hold Indefinite Leave to Remain "
+        "in the UK, so I don't need sponsorship at all. I'm also eligible for SC clearance, "
+        "which is handy if the role touches anything public-sector or government-adjacent."
+    ),
+    "leaving": (
+        "Honestly? Amdocs is going through some restructuring at the moment. Nobody's told me "
+        "I'll be impacted, and I want to be upfront about that — this isn't me running from "
+        "something. I'd just rather be proactive and start exploring what's next on my own "
+        "terms, rather than wait and see how things shake out."
+    ),
+    "next_role": (
+        "I'm mainly targeting Product Owner and Product Manager roles, ideally in Telco or "
+        "Fintech. I've spent my career building strong relationships with customers and really "
+        "understanding what they need, and I'd like to take that experience and apply it "
+        "somewhere a bit different — which is part of why Fintech interests me alongside Telco."
+    ),
+    "notice": (
+        "My notice period is three months, and realistically the company does enforce that in "
+        "full, so that's something worth planning around from day one."
+    ),
+    "salary": (
+        "I'd prefer to talk through that in a live conversation, if that's alright — I'd "
+        "rather understand the full package and scope of the role first before putting a "
+        "number on it."
+    ),
+    "strengths_weaknesses": (
+        "I'd say I'm a strong team player, and I'm genuinely good at building and maintaining "
+        "trust with customers — that relationship piece is something I care about. I'm also a "
+        "solid problem solver, especially when things get messy. On the flip side, if I'm "
+        "honest, I can get a bit impatient — especially with slow progress or slow responses "
+        "from other teams. It's something I'm conscious of, and I actively work on it, mostly "
+        "by communicating expectations upfront rather than just getting frustrated."
+    ),
+    "proud": (
+        "Probably a moment back at T-Mobile Montenegro. The customer wanted to push the "
+        "iPhone 5S into production right around our go-live, but it hadn't been planned into "
+        "the release, so management initially said no. I understood how much it mattered to "
+        "the customer, so I dug into it — looked at the development effort, worked out the "
+        "testing scenarios, and came up with a technical fix we could layer on top of "
+        "production without touching or risking the existing data. I took that solution back "
+        "to management, got it approved, and communicated it to T-Mobile. I'm proud of that "
+        "one because it was genuinely out-of-the-box thinking that delivered real value to the "
+        "customer, rather than just accepting the default answer."
+    ),
+}
+
+SCREENING_SAMPLE_QUESTIONS = [
+    "Tell me about your background",
+    "What's your visa status?",
+    "Why are you leaving your current company?",
+    "What are you looking for next?",
+    "What's your notice period?",
+    "What are your salary expectations?",
+    "What's a strength and a weakness of yours?",
+    "What are you most proud of?",
+]
+
+SCREENING_TOPICS: list[KnowledgeTopic] = [
+    KnowledgeTopic(
+        id="s_background",
+        keywords=["background", "yourself", "who are you", "introduce", "about you", "walk me through your"],
+        weight=3,
+        response=SCREENING_FACTS["background"],
+    ),
+    KnowledgeTopic(
+        id="s_visa",
+        keywords=["visa", "sponsorship", "work authorization", "right to work", "ilr", "clearance", "eligible to work"],
+        weight=4,
+        response=SCREENING_FACTS["visa"],
+    ),
+    KnowledgeTopic(
+        id="s_leaving",
+        keywords=["leaving", "leave your current", "why are you leaving", "current employer", "current company", "why change", "why move"],
+        weight=4,
+        response=SCREENING_FACTS["leaving"],
+    ),
+    KnowledgeTopic(
+        id="s_next_role",
+        keywords=["looking for", "what are you looking", "next role", "target role", "type of role", "ideal role", "what kind of role"],
+        weight=3,
+        response=SCREENING_FACTS["next_role"],
+    ),
+    KnowledgeTopic(
+        id="s_notice",
+        keywords=["notice period", "when can you start", "start date", "availability"],
+        weight=4,
+        response=SCREENING_FACTS["notice"],
+    ),
+    KnowledgeTopic(
+        id="s_salary",
+        keywords=["salary", "compensation", "expected salary", "pay expectation", "package", "day rate", "rate expectation"],
+        weight=4,
+        response=SCREENING_FACTS["salary"],
+    ),
+    KnowledgeTopic(
+        id="s_strengths_weaknesses",
+        keywords=["strength", "weakness", "greatest strength", "area of improvement", "weaknesses", "areas of development"],
+        weight=3,
+        response=SCREENING_FACTS["strengths_weaknesses"],
+    ),
+    KnowledgeTopic(
+        id="s_proud",
+        keywords=["proud", "achievement", "proudest", "accomplishment", "biggest win"],
+        weight=3,
+        response=SCREENING_FACTS["proud"],
+    ),
+]
+
+SCREENING_DEFAULT_RESPONSE = (
+    "That's not something I've prepped a specific answer for yet, but happy to talk it "
+    "through live. Feel free to ask me about my background, visa status, why I'm looking to "
+    "move on, what I'm targeting next, notice period, salary, or my strengths and weaknesses."
+)
+
+
+def get_screening_knowledge_response(prompt: str) -> tuple[str, Optional[str]]:
+    """Return (response, matched_topic_id) from the screening knowledge base."""
+    scores = [(t, _score_topic(t, prompt)) for t in SCREENING_TOPICS]
+    scores.sort(key=lambda x: x[1], reverse=True)
+    best, best_score = scores[0]
+    if best_score > 0:
+        return best.response, best.id
+    return SCREENING_DEFAULT_RESPONSE, None
+
+
+def _build_screening_system_prompt() -> str:
+    facts = SCREENING_FACTS
+    return f"""You are {PERSONA['name']}'s digital twin, answering AS Shrirang in a live recruiter \
+screening call (a 30-minute phone/video screen). Answer exactly like a real person would in that \
+setting — natural, warm, professional, first person. Do NOT use bullet points, headers, or markdown \
+formatting of any kind — just flowing spoken-style sentences, like a transcript of what you'd \
+actually say out loud. Use contractions (I'm, I've, don't). Occasional natural connectors like \
+"Honestly," or "So," are fine, but don't overdo it.
+
+Ground every answer strictly in the facts below. Do not invent companies, dates, numbers, or details \
+that are not listed here. If asked something outside this scope, respond honestly in character — \
+something like "That's not something I've prepared an answer for yet, but happy to discuss it live" \
+— rather than making information up.
+
+FACTS ABOUT ME:
+- Background: {facts['background']}
+- Visa / work authorization: {facts['visa']}
+- Why I'm leaving my current company: {facts['leaving']}
+- What I'm looking for next: {facts['next_role']}
+- Notice period: {facts['notice']}
+- Salary expectations: {facts['salary']}
+- Strengths and weaknesses: {facts['strengths_weaknesses']}
+- What I'm most proud of: {facts['proud']}
+
+Keep answers roughly 60-120 words — natural interview-answer length, not an essay. Never break \
+character or mention that you are an AI or a digital twin unless directly asked."""
+
+
+def get_screening_ai_response(prompt: str, history: list[dict]) -> Optional[str]:
+    """Call OpenAI for recruiter-screening mode. Lower temperature for consistency."""
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        return None
+
+    try:
+        from openai import OpenAI
+
+        client = OpenAI(api_key=api_key)
+        model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+
+        messages = [{"role": "system", "content": _build_screening_system_prompt()}]
+        for msg in history[-6:]:
+            messages.append({"role": msg["role"], "content": msg["content"]})
+        messages.append({"role": "user", "content": prompt})
+
+        completion = client.chat.completions.create(
+            model=model,
+            messages=messages,
+            temperature=0.45,
+            max_tokens=350,
+        )
+        return completion.choices[0].message.content
+    except Exception:
+        return None
+
+
+def respond_screening(prompt: str, history: list[dict], use_ai: bool = True) -> tuple[str, str]:
+    """
+    Generate a recruiter-screening response. Returns (content, mode) where mode is 'ai' or 'knowledge'.
+    Falls back to the screening knowledge base if AI is unavailable or fails.
+    """
+    if use_ai:
+        ai_text = get_screening_ai_response(prompt, history)
+        if ai_text:
+            return ai_text, "ai"
+
+    content, _ = get_screening_knowledge_response(prompt)
+    return content, "knowledge"
+
+
+# ---------------------------------------------------------------------------
 # Response engine
 # ---------------------------------------------------------------------------
 
