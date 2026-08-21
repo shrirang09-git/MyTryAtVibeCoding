@@ -5,7 +5,13 @@ from pathlib import Path
 import streamlit as st
 from dotenv import load_dotenv
 
-from persona import PERSONA, SAMPLE_QUESTIONS, respond
+from persona import (
+    PERSONA,
+    SAMPLE_QUESTIONS,
+    SCREENING_SAMPLE_QUESTIONS,
+    respond,
+    respond_screening,
+)
 
 load_dotenv()
 
@@ -109,6 +115,18 @@ with st.sidebar:
         help="Requires OPENAI_API_KEY in secrets. Falls back to knowledge base if off or unavailable.",
     )
 
+    st.divider()
+    mode = st.radio(
+        "Mode",
+        options=["PO Deep-Dive", "Recruiter Screening"],
+        help=(
+            "PO Deep-Dive: structured product-thinking answers on backlog, requirements, "
+            "BSS/OSS, digital twins, Agile.\n\n"
+            "Recruiter Screening: conversational, first-person answers to common screening "
+            "questions — background, visa status, why leaving, notice period, etc."
+        ),
+    )
+
 # ---------------------------------------------------------------------------
 # Main content
 # ---------------------------------------------------------------------------
@@ -120,13 +138,23 @@ with col_av:
             st.markdown('<div class="header-avatar">', unsafe_allow_html=True)
             st.image(ASSISTANT_AVATAR, width=72)
             st.markdown("</div>", unsafe_allow_html=True)
+is_screening = mode == "Recruiter Screening"
+
 with col_title:
-    st.markdown('<p class="main-header">AI Product Owner Twin</p>', unsafe_allow_html=True)
-    st.markdown(
-        '<p class="sub-header">Ask product, BSS, or digital-twin questions — '
-        "answered the way a senior Telecom PO would.</p>",
-        unsafe_allow_html=True,
-    )
+    if is_screening:
+        st.markdown('<p class="main-header">Recruiter Screening Twin</p>', unsafe_allow_html=True)
+        st.markdown(
+            '<p class="sub-header">Ask me the questions a recruiter would in a screening call — '
+            "background, visa status, notice period, and more.</p>",
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown('<p class="main-header">AI Product Owner Twin</p>', unsafe_allow_html=True)
+        st.markdown(
+            '<p class="sub-header">Ask product, BSS, or digital-twin questions — '
+            "answered the way a senior Telecom PO would.</p>",
+            unsafe_allow_html=True,
+        )
 with col_status:
     has_key = bool(__import__("os").getenv("OPENAI_API_KEY"))
     if has_key and use_ai:
@@ -135,20 +163,23 @@ with col_status:
         st.info("Knowledge mode")
 
 # Sample questions — one-click for LinkedIn demo
+active_samples = SCREENING_SAMPLE_QUESTIONS if is_screening else SAMPLE_QUESTIONS
+sample_key_prefix = "screening_sample" if is_screening else "po_sample"
 st.markdown("**Try a sample question:**")
 sq_cols = st.columns(2)
-for i, question in enumerate(SAMPLE_QUESTIONS):
+for i, question in enumerate(active_samples):
     with sq_cols[i % 2]:
-        if st.button(question, key=f"sample_{i}", use_container_width=True):
+        if st.button(question, key=f"{sample_key_prefix}_{i}", use_container_width=True):
             st.session_state.pending_prompt = question
 
 st.divider()
 
-# Chat history
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+# Chat history — kept separate per mode so switching doesn't mix contexts
+messages_key = "screening_messages" if is_screening else "po_messages"
+if messages_key not in st.session_state:
+    st.session_state[messages_key] = []
 
-for message in st.session_state.messages:
+for message in st.session_state[messages_key]:
     with st.chat_message(
         message["role"],
         avatar=ASSISTANT_AVATAR if message["role"] == "assistant" else None,
@@ -158,23 +189,34 @@ for message in st.session_state.messages:
             st.caption(f"via {message['mode']} engine")
 
 # Handle sample question click or chat input
-prompt = st.session_state.pop("pending_prompt", None) or st.chat_input(
-    "Ask about prioritisation, requirements, BSS/OSS, digital twin, Agile..."
+chat_placeholder = (
+    "Ask about background, visa status, why you're leaving, notice period..."
+    if is_screening
+    else "Ask about prioritisation, requirements, BSS/OSS, digital twin, Agile..."
 )
+prompt = st.session_state.pop("pending_prompt", None) or st.chat_input(chat_placeholder)
 
 if prompt:
     with st.chat_message("user"):
         st.markdown(prompt)
-    st.session_state.messages.append({"role": "user", "content": prompt})
+    st.session_state[messages_key].append({"role": "user", "content": prompt})
 
+    spinner_text = "Thinking about how to answer that..." if is_screening else "Thinking like a PO..."
     with st.chat_message("assistant", avatar=ASSISTANT_AVATAR):
-        with st.spinner("Thinking like a PO..."):
-            content, mode = respond(prompt, st.session_state.messages, use_ai=use_ai)
+        with st.spinner(spinner_text):
+            if is_screening:
+                content, resp_mode = respond_screening(
+                    prompt, st.session_state[messages_key], use_ai=use_ai
+                )
+            else:
+                content, resp_mode = respond(
+                    prompt, st.session_state[messages_key], use_ai=use_ai
+                )
         st.markdown(content)
-        st.caption(f"via {mode} engine")
+        st.caption(f"via {resp_mode} engine")
 
-    st.session_state.messages.append(
-        {"role": "assistant", "content": content, "mode": mode}
+    st.session_state[messages_key].append(
+        {"role": "assistant", "content": content, "mode": resp_mode}
     )
 
 # Footer
