@@ -156,6 +156,33 @@ st.markdown(
         border-color: #dbeafe;
     }
 
+    /* ---- Chat input bar ---- */
+    [data-testid="stBottom"] > div {
+        background: #ffffff;
+        border-top: 1px solid var(--border);
+    }
+    [data-testid="stChatInput"] {
+        background: #ffffff !important;
+        border: 1.5px solid var(--border) !important;
+        border-radius: 999px !important;
+        box-shadow: var(--shadow-sm);
+    }
+    [data-testid="stChatInput"]:focus-within {
+        border-color: var(--accent) !important;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    [data-testid="stChatInput"] textarea { color: #1e293b !important; }
+    [data-testid="stChatInput"] textarea::placeholder { color: var(--slate-light) !important; }
+    [data-testid="stChatInput"] button {
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%) !important;
+        border-radius: 999px !important;
+        border: none !important;
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.15s ease;
+    }
+    [data-testid="stChatInput"] button:hover { transform: scale(1.08); }
+    [data-testid="stChatInput"] button svg { fill: #ffffff !important; }
+
     /* ---- Credential badges ---- */
     .cred-badge {
         display: inline-block; background: var(--accent-light); color: var(--accent-dark);
