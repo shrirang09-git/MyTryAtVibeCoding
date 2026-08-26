@@ -37,6 +37,11 @@ def has_avatar_image() -> bool:
     return get_avatar() != AVATAR_FALLBACK
 
 
+def badge_row(items: list[str]) -> str:
+    """Render a list of strings as pill badges (reuses .cred-badge style)."""
+    return " ".join(f'<span class="cred-badge">{item}</span>' for item in items)
+
+
 ASSISTANT_AVATAR = get_avatar()
 
 # ---------------------------------------------------------------------------
@@ -53,34 +58,139 @@ st.set_page_config(
 st.markdown(
     """
 <style>
-    .main-header { font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem; color: #1e3a8a; }
-    .sub-header { color: #64748b; font-size: 1rem; margin-bottom: 1.5rem; }
-    .cred-badge {
-        display: inline-block; background: #eff6ff; color: #1d4ed8;
-        padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.75rem;
-        margin: 0.15rem 0.25rem 0.15rem 0;
-    }
-    .sample-btn { margin-bottom: 0.35rem; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-    /* Dark navy sidebar for contrast against the white main pane */
+    :root {
+        --navy: #0f172a;
+        --navy-2: #1e2a47;
+        --accent: #2563eb;
+        --accent-dark: #1e3a8a;
+        --accent-light: #eff6ff;
+        --slate: #64748b;
+        --slate-light: #94a3b8;
+        --border: #e2e8f0;
+        --radius-lg: 18px;
+        --radius-md: 12px;
+        --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+        --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    html, body, [class*="css"] {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    /* ---- Header ---- */
+    .main-header {
+        font-size: 2rem; font-weight: 800; margin-bottom: 0.2rem;
+        color: var(--accent-dark); letter-spacing: -0.02em;
+    }
+    .sub-header { color: var(--slate); font-size: 1rem; margin-bottom: 0; }
+
+    .st-key-header_card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border-radius: var(--radius-lg) !important;
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border) !important;
+        padding: 0.25rem 0.5rem;
+    }
+
+    /* ---- Mode switch ---- */
+    .st-key-mode_switch .stButton button {
+        height: 3.3rem;
+        border-radius: 999px;
+        font-size: 1.02rem;
+        font-weight: 700;
+        border: 1.5px solid var(--border);
+        transition: all 0.15s ease;
+    }
+    .st-key-mode_switch .stButton button[kind="primary"] {
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+        border: none;
+        box-shadow: var(--shadow-sm);
+    }
+    .st-key-mode_switch .stButton button:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+
+    /* ---- Sample question chips ---- */
+    .sample-eyebrow {
+        text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.72rem;
+        font-weight: 700; color: var(--slate-light); margin-bottom: 0.5rem;
+    }
+    .st-key-sample_questions .stButton button {
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border);
+        background: #ffffff;
+        font-weight: 500;
+        color: #334155;
+        text-align: left;
+        justify-content: flex-start;
+        padding: 0.6rem 1rem;
+        transition: all 0.15s ease;
+    }
+    .st-key-sample_questions .stButton button:hover {
+        border-color: var(--accent);
+        background: var(--accent-light);
+        color: var(--accent-dark);
+    }
+
+    /* ---- Status pill (AI mode / Knowledge mode) ---- */
+    [data-testid="stAlert"] {
+        border-radius: 999px !important;
+        padding: 0.35rem 0.9rem !important;
+        font-size: 0.82rem !important;
+        width: fit-content;
+        margin-left: auto;
+        box-shadow: none !important;
+    }
+
+    /* ---- Chat bubbles ---- */
+    [data-testid="stChatMessage"] {
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 0.9rem 1.1rem;
+        margin-bottom: 0.75rem;
+        box-shadow: var(--shadow-sm);
+    }
+    [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
+        background: var(--accent-light);
+        border-color: #dbeafe;
+    }
+
+    /* ---- Credential badges ---- */
+    .cred-badge {
+        display: inline-block; background: var(--accent-light); color: var(--accent-dark);
+        padding: 0.25rem 0.7rem; border-radius: 999px; font-size: 0.78rem;
+        margin: 0.15rem 0.3rem 0.15rem 0; font-weight: 500; border: 1px solid #dbeafe;
+    }
+
+    /* ---- Dividers ---- */
+    hr { border: none; height: 1px; background: var(--border); margin: 1.4rem 0; }
+
+    /* ---- Sidebar (dark navy for contrast against the white main pane) ---- */
     div[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #0f172a 0%, #1e2a47 100%);
+        background: linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%);
         border-right: 1px solid #1e293b;
     }
     div[data-testid="stSidebar"] * { color: #e2e8f0; }
-    div[data-testid="stSidebar"] h3 { color: #ffffff; }
+    div[data-testid="stSidebar"] h3 { color: #ffffff; font-weight: 700; }
     div[data-testid="stSidebar"] strong { color: #ffffff; }
-    div[data-testid="stSidebar"] hr { border-color: rgba(255, 255, 255, 0.14); }
+    div[data-testid="stSidebar"] hr { background: rgba(255, 255, 255, 0.14); margin: 1.1rem 0; }
     div[data-testid="stSidebar"] [data-testid="stCaptionContainer"] { color: #94a3b8 !important; }
     div[data-testid="stSidebar"] .stToggle label p { color: #e2e8f0 !important; }
+    div[data-testid="stSidebar"] .cred-badge {
+        background: rgba(59, 130, 246, 0.15); color: #93c5fd; border-color: rgba(59, 130, 246, 0.3);
+    }
 
     div[data-testid="stSidebar"] [data-testid="stImage"] img,
     .header-avatar [data-testid="stImage"] img {
         border-radius: 50%;
-        border: 3px solid #3b82f6;
+        border: 3px solid var(--accent);
         object-fit: cover;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
     }
-    .footer-note { color: #94a3b8; font-size: 0.8rem; margin-top: 2rem; }
+
+    /* ---- Footer ---- */
+    .footer-note { color: var(--slate-light); font-size: 0.8rem; margin-top: 1rem; text-align: center; }
 </style>
 """,
     unsafe_allow_html=True,
@@ -114,16 +224,13 @@ with st.sidebar:
 
     st.divider()
     st.markdown("**Certifications**")
-    for cert in PERSONA["certifications"]:
-        st.markdown(f"- {cert}")
+    st.markdown(badge_row(PERSONA["certifications"]), unsafe_allow_html=True)
     st.divider()
     st.markdown("**Domain focus**")
-    for domain in PERSONA["domains"]:
-        st.markdown(f"- {domain}")
+    st.markdown(badge_row(PERSONA["domains"]), unsafe_allow_html=True)
     st.divider()
     st.markdown("**Operator programmes**")
-    for op in PERSONA["operators"]:
-        st.markdown(f"- {op}")
+    st.markdown(badge_row(PERSONA["operators"]), unsafe_allow_html=True)
     st.divider()
     st.link_button("Connect on LinkedIn", PERSONA["linkedin"], use_container_width=True)
     st.caption(f"📍 {PERSONA['location']}")
@@ -137,80 +244,73 @@ with st.sidebar:
 if "mode" not in st.session_state:
     st.session_state.mode = "Recruiter Screening"
 
-st.markdown(
-    """
-<style>
-    div[data-testid="stHorizontalBlock"] .stButton button {
-        height: 3.2rem;
-        font-size: 1.05rem;
-        font-weight: 600;
-    }
-</style>
-""",
-    unsafe_allow_html=True,
-)
-
-mode_col1, mode_col2 = st.columns(2)
-with mode_col1:
-    if st.button(
-        "🎙️ Recruiter Screening",
-        use_container_width=True,
-        type="primary" if st.session_state.mode == "Recruiter Screening" else "secondary",
-    ):
-        st.session_state.mode = "Recruiter Screening"
-        st.rerun()
-with mode_col2:
-    if st.button(
-        "🎯 PO Deep-Dive",
-        use_container_width=True,
-        type="primary" if st.session_state.mode == "PO Deep-Dive" else "secondary",
-    ):
-        st.session_state.mode = "PO Deep-Dive"
-        st.rerun()
+with st.container(key="mode_switch"):
+    mode_col1, mode_col2 = st.columns(2)
+    with mode_col1:
+        if st.button(
+            "🎙️ Recruiter Screening",
+            use_container_width=True,
+            type="primary" if st.session_state.mode == "Recruiter Screening" else "secondary",
+        ):
+            st.session_state.mode = "Recruiter Screening"
+            st.rerun()
+    with mode_col2:
+        if st.button(
+            "🎯 PO Deep-Dive",
+            use_container_width=True,
+            type="primary" if st.session_state.mode == "PO Deep-Dive" else "secondary",
+        ):
+            st.session_state.mode = "PO Deep-Dive"
+            st.rerun()
 
 mode = st.session_state.mode
-st.divider()
-
-col_av, col_title, col_status = st.columns([1, 4, 1])
-with col_av:
-    if has_avatar_image():
-        with st.container():
-            st.markdown('<div class="header-avatar">', unsafe_allow_html=True)
-            st.image(ASSISTANT_AVATAR, width=72)
-            st.markdown("</div>", unsafe_allow_html=True)
 is_screening = mode == "Recruiter Screening"
 
-with col_title:
-    if is_screening:
-        st.markdown('<p class="main-header">Recruiter Screening Twin</p>', unsafe_allow_html=True)
-        st.markdown(
-            '<p class="sub-header">Ask me the questions a recruiter would in a screening call — '
-            "background, visa status, notice period, and more.</p>",
-            unsafe_allow_html=True,
-        )
-    else:
-        st.markdown('<p class="main-header">AI Product Owner Twin</p>', unsafe_allow_html=True)
-        st.markdown(
-            '<p class="sub-header">Ask product, BSS, or digital-twin questions — '
-            "answered the way a senior Telecom PO would.</p>",
-            unsafe_allow_html=True,
-        )
-with col_status:
-    has_key = bool(__import__("os").getenv("OPENAI_API_KEY"))
-    if has_key and use_ai:
-        st.success("AI mode")
-    else:
-        st.info("Knowledge mode")
+st.write("")
+
+with st.container(border=True, key="header_card"):
+    col_av, col_title, col_status = st.columns([1, 4, 1])
+    with col_av:
+        if has_avatar_image():
+            with st.container():
+                st.markdown('<div class="header-avatar">', unsafe_allow_html=True)
+                st.image(ASSISTANT_AVATAR, width=72)
+                st.markdown("</div>", unsafe_allow_html=True)
+
+    with col_title:
+        if is_screening:
+            st.markdown('<p class="main-header">Recruiter Screening Twin</p>', unsafe_allow_html=True)
+            st.markdown(
+                '<p class="sub-header">Ask me the questions a recruiter would in a screening call — '
+                "background, visa status, notice period, and more.</p>",
+                unsafe_allow_html=True,
+            )
+        else:
+            st.markdown('<p class="main-header">AI Product Owner Twin</p>', unsafe_allow_html=True)
+            st.markdown(
+                '<p class="sub-header">Ask product, BSS, or digital-twin questions — '
+                "answered the way a senior Telecom PO would.</p>",
+                unsafe_allow_html=True,
+            )
+    with col_status:
+        has_key = bool(__import__("os").getenv("OPENAI_API_KEY"))
+        if has_key and use_ai:
+            st.success("AI mode")
+        else:
+            st.info("Knowledge mode")
+
+st.write("")
 
 # Sample questions — one-click for LinkedIn demo
 active_samples = SCREENING_SAMPLE_QUESTIONS if is_screening else SAMPLE_QUESTIONS
 sample_key_prefix = "screening_sample" if is_screening else "po_sample"
-st.markdown("**Try a sample question:**")
-sq_cols = st.columns(2)
-for i, question in enumerate(active_samples):
-    with sq_cols[i % 2]:
-        if st.button(question, key=f"{sample_key_prefix}_{i}", use_container_width=True):
-            st.session_state.pending_prompt = question
+with st.container(key="sample_questions"):
+    st.markdown('<p class="sample-eyebrow">Try a sample question</p>', unsafe_allow_html=True)
+    sq_cols = st.columns(2)
+    for i, question in enumerate(active_samples):
+        with sq_cols[i % 2]:
+            if st.button(question, key=f"{sample_key_prefix}_{i}", use_container_width=True):
+                st.session_state.pending_prompt = question
 
 st.divider()
 
@@ -264,6 +364,7 @@ if prompt:
     )
 
 # Footer
+st.divider()
 st.markdown(
     '<p class="footer-note">Built by Shrirang Deshpande · '
     "CSPO · SAFe POPM · Telecom BSS Product Owner · "
