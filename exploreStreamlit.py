@@ -61,9 +61,9 @@ st.markdown(
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
     :root {
-        --accent: #2563eb;
-        --accent-dark: #1e3a8a;
-        --accent-light: #eff6ff;
+        --accent: #7c3aed;
+        --accent-dark: #5b21b6;
+        --accent-light: #f5f3ff;
         --slate: #64748b;
         --slate-light: #94a3b8;
         --border: #e2e8f0;
@@ -115,7 +115,7 @@ st.markdown(
     }
     .st-key-sample_questions .stButton button {
         border-radius: var(--radius-md);
-        border: 1px solid var(--border);
+        border: 1.5px solid #cbd5e1;
         background: #ffffff;
         font-weight: 500;
         color: #334155;
@@ -151,7 +151,7 @@ st.markdown(
     }
     [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
         background: var(--accent-light);
-        border-color: #dbeafe;
+        border-color: #ede9fe;
     }
 
     /* ---- Chat input bar ---- */
@@ -168,7 +168,7 @@ st.markdown(
     }
     [data-testid="stChatInput"]:focus-within {
         border-color: var(--accent) !important;
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
     }
     [data-testid="stChatInput"] * { background: transparent !important; }
     [data-testid="stChatInput"] textarea { color: #1e293b !important; }
@@ -214,7 +214,7 @@ st.markdown(
         border-radius: 50%;
         border: 3px solid var(--accent);
         object-fit: cover;
-        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+        box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12);
     }
 
     /* ---- Footer (lives at the bottom of the sidebar — see note below) ---- */
