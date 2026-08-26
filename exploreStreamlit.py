@@ -61,8 +61,6 @@ st.markdown(
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
     :root {
-        --navy: #0f172a;
-        --navy-2: #1e2a47;
         --accent: #2563eb;
         --accent-dark: #1e3a8a;
         --accent-light: #eff6ff;
@@ -157,8 +155,9 @@ st.markdown(
     }
 
     /* ---- Chat input bar ---- */
+    [data-testid="stBottom"] { background: #ffffff !important; }
     [data-testid="stBottom"] > div {
-        background: #ffffff;
+        background: #ffffff !important;
         border-top: 1px solid var(--border);
     }
     [data-testid="stChatInput"] {
@@ -171,6 +170,7 @@ st.markdown(
         border-color: var(--accent) !important;
         box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
     }
+    [data-testid="stChatInput"] * { background: transparent !important; }
     [data-testid="stChatInput"] textarea { color: #1e293b !important; }
     [data-testid="stChatInput"] textarea::placeholder { color: var(--slate-light) !important; }
     [data-testid="stChatInput"] button {
@@ -183,41 +183,42 @@ st.markdown(
     [data-testid="stChatInput"] button:hover { transform: scale(1.08); }
     [data-testid="stChatInput"] button svg { fill: #ffffff !important; }
 
-    /* ---- Credential badges ---- */
+    /* ---- Credential badges (neutral gray-on-white, used in the sidebar) ---- */
     .cred-badge {
-        display: inline-block; background: var(--accent-light); color: var(--accent-dark);
+        display: inline-block; background: #f1f5f9; color: #1e293b;
         padding: 0.25rem 0.7rem; border-radius: 999px; font-size: 0.78rem;
-        margin: 0.15rem 0.3rem 0.15rem 0; font-weight: 500; border: 1px solid #dbeafe;
+        margin: 0.15rem 0.3rem 0.15rem 0; font-weight: 500; border: 1px solid var(--border);
     }
 
     /* ---- Dividers ---- */
     hr { border: none; height: 1px; background: var(--border); margin: 1.4rem 0; }
 
-    /* ---- Sidebar (dark navy for contrast against the white main pane) ---- */
-    div[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%);
-        border-right: 1px solid #1e293b;
+    /* ---- Sidebar: white background, near-black text ---- */
+    /* Note: Streamlit renders the sidebar as a <section>, not a <div> —
+       an earlier `div[data-testid="stSidebar"]` selector never matched. */
+    [data-testid="stSidebar"] {
+        background: #ffffff !important;
+        border-right: 1px solid var(--border);
     }
-    div[data-testid="stSidebar"] * { color: #e2e8f0; }
-    div[data-testid="stSidebar"] h3 { color: #ffffff; font-weight: 700; }
-    div[data-testid="stSidebar"] strong { color: #ffffff; }
-    div[data-testid="stSidebar"] hr { background: rgba(255, 255, 255, 0.14); margin: 1.1rem 0; }
-    div[data-testid="stSidebar"] [data-testid="stCaptionContainer"] { color: #94a3b8 !important; }
-    div[data-testid="stSidebar"] .stToggle label p { color: #e2e8f0 !important; }
-    div[data-testid="stSidebar"] .cred-badge {
-        background: rgba(59, 130, 246, 0.15); color: #93c5fd; border-color: rgba(59, 130, 246, 0.3);
-    }
+    [data-testid="stSidebar"] * { color: #0f172a; }
+    [data-testid="stSidebar"] h3 { color: #0f172a; font-weight: 700; }
+    [data-testid="stSidebar"] strong { color: #0f172a; }
+    [data-testid="stSidebar"] hr { background: var(--border); margin: 1.1rem 0; }
+    [data-testid="stSidebar"] [data-testid="stCaptionContainer"] { color: var(--slate) !important; }
+    [data-testid="stSidebar"] .stToggle label p { color: #0f172a !important; }
+    /* Filled buttons/links keep white text for contrast against their colored fill */
+    [data-testid="stSidebar"] a { color: #ffffff !important; }
 
-    div[data-testid="stSidebar"] [data-testid="stImage"] img,
+    [data-testid="stSidebar"] [data-testid="stImage"] img,
     .header-avatar [data-testid="stImage"] img {
         border-radius: 50%;
         border: 3px solid var(--accent);
         object-fit: cover;
-        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
     }
 
-    /* ---- Footer ---- */
-    .footer-note { color: var(--slate-light); font-size: 0.8rem; margin-top: 1rem; text-align: center; }
+    /* ---- Footer (lives at the bottom of the sidebar — see note below) ---- */
+    .footer-note { color: var(--slate-light); font-size: 0.78rem; margin-top: 1rem; line-height: 1.5; }
 </style>
 """,
     unsafe_allow_html=True,
@@ -261,6 +262,13 @@ with st.sidebar:
     st.divider()
     st.link_button("Connect on LinkedIn", PERSONA["linkedin"], use_container_width=True)
     st.caption(f"📍 {PERSONA['location']}")
+    st.divider()
+    st.markdown(
+        '<p class="footer-note">Built by Shrirang Deshpande · '
+        "CSPO · SAFe POPM · Telecom BSS Product Owner · "
+        "This twin reflects professional PO thinking — not official employer advice.</p>",
+        unsafe_allow_html=True,
+    )
 
 # ---------------------------------------------------------------------------
 # Main content
@@ -389,12 +397,3 @@ if prompt:
     st.session_state[messages_key].append(
         {"role": "assistant", "content": content, "mode": resp_mode}
     )
-
-# Footer
-st.divider()
-st.markdown(
-    '<p class="footer-note">Built by Shrirang Deshpande · '
-    "CSPO · SAFe POPM · Telecom BSS Product Owner · "
-    "This twin reflects professional PO thinking — not official employer advice.</p>",
-    unsafe_allow_html=True,
-)
