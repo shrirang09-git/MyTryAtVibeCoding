@@ -171,6 +171,16 @@ st.markdown(
         box-shadow: 0 0 0 3px rgba(71, 85, 105, 0.15);
     }
     [data-testid="stChatInput"] * { background: transparent !important; }
+    /* Suppress the browser's own focus outline on the inner textarea/wrapper —
+       it was drawing a second, sharp-cornered rectangle on top of the custom
+       pill border + glow above, giving a 'boxes overlapping' look. */
+    [data-testid="stChatInput"] *,
+    [data-testid="stChatInput"] *:focus,
+    [data-testid="stChatInput"] *:focus-visible {
+        outline: none !important;
+        box-shadow: none !important;
+        border-color: transparent !important;
+    }
     [data-testid="stChatInput"] textarea { color: #1e293b !important; }
     [data-testid="stChatInput"] textarea::placeholder { color: var(--slate-light) !important; }
     [data-testid="stChatInput"] button {
