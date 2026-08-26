@@ -61,9 +61,9 @@ st.markdown(
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
     :root {
-        --accent: #7c3aed;
-        --accent-dark: #5b21b6;
-        --accent-light: #f5f3ff;
+        --accent: #475569;
+        --accent-dark: #0f172a;
+        --accent-light: #f1f5f9;
         --slate: #64748b;
         --slate-light: #94a3b8;
         --border: #e2e8f0;
@@ -151,7 +151,7 @@ st.markdown(
     }
     [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
         background: var(--accent-light);
-        border-color: #ede9fe;
+        border-color: #e2e8f0;
     }
 
     /* ---- Chat input bar ---- */
@@ -168,7 +168,7 @@ st.markdown(
     }
     [data-testid="stChatInput"]:focus-within {
         border-color: var(--accent) !important;
-        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+        box-shadow: 0 0 0 3px rgba(71, 85, 105, 0.15);
     }
     [data-testid="stChatInput"] * { background: transparent !important; }
     [data-testid="stChatInput"] textarea { color: #1e293b !important; }
@@ -214,7 +214,7 @@ st.markdown(
         border-radius: 50%;
         border: 3px solid var(--accent);
         object-fit: cover;
-        box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12);
+        box-shadow: 0 0 0 4px rgba(71, 85, 105, 0.12);
     }
 
     /* ---- Footer (lives at the bottom of the sidebar — see note below) ---- */
