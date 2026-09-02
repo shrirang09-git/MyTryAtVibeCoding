@@ -216,8 +216,21 @@ st.markdown(
     [data-testid="stSidebar"] hr { background: var(--border); margin: 1.1rem 0; }
     [data-testid="stSidebar"] [data-testid="stCaptionContainer"] { color: var(--slate) !important; }
     [data-testid="stSidebar"] .stToggle label p { color: #0f172a !important; }
-    /* Filled buttons/links keep white text for contrast against their colored fill */
-    [data-testid="stSidebar"] a { color: #ffffff !important; }
+    /* LinkedIn button: filled with LinkedIn's brand blue, white text.
+       The `a *` selector (not just `a`) is needed to out-specificity the
+       sidebar-wide `[data-testid="stSidebar"] * { color: #0f172a }` rule
+       above, which otherwise wins on the button's inner text node. */
+    [data-testid="stSidebar"] [data-testid="stLinkButton"] a {
+        background: #0a66c2 !important;
+        border-color: #0a66c2 !important;
+        color: #ffffff !important;
+        font-weight: 600;
+    }
+    [data-testid="stSidebar"] [data-testid="stLinkButton"] a * { color: #ffffff !important; }
+    [data-testid="stSidebar"] [data-testid="stLinkButton"] a:hover {
+        background: #004182 !important;
+        border-color: #004182 !important;
+    }
 
     [data-testid="stSidebar"] [data-testid="stImage"] img,
     .header-avatar [data-testid="stImage"] img {
