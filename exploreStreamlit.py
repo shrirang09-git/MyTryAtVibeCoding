@@ -216,20 +216,31 @@ st.markdown(
     [data-testid="stSidebar"] hr { background: var(--border); margin: 1.1rem 0; }
     [data-testid="stSidebar"] [data-testid="stCaptionContainer"] { color: var(--slate) !important; }
     [data-testid="stSidebar"] .stToggle label p { color: #0f172a !important; }
-    /* LinkedIn button: filled with LinkedIn's brand blue, white text.
-       The `a *` selector (not just `a`) is needed to out-specificity the
-       sidebar-wide `[data-testid="stSidebar"] * { color: #0f172a }` rule
-       above, which otherwise wins on the button's inner text node. */
-    [data-testid="stSidebar"] [data-testid="stLinkButton"] a {
+    /* Contact buttons. The `a *` selector (not just `a`) is needed to
+       out-specificity the sidebar-wide `[data-testid="stSidebar"] * {
+       color: #0f172a }` rule above, which otherwise wins on the button's
+       inner text node. */
+    .st-key-linkedin_btn a {
         background: #0a66c2 !important;
         border-color: #0a66c2 !important;
         color: #ffffff !important;
         font-weight: 600;
     }
-    [data-testid="stSidebar"] [data-testid="stLinkButton"] a * { color: #ffffff !important; }
-    [data-testid="stSidebar"] [data-testid="stLinkButton"] a:hover {
+    .st-key-linkedin_btn a * { color: #ffffff !important; }
+    .st-key-linkedin_btn a:hover {
         background: #004182 !important;
         border-color: #004182 !important;
+    }
+    .st-key-email_btn a {
+        background: #ffffff !important;
+        border: 1.5px solid var(--border) !important;
+        color: #0f172a !important;
+        font-weight: 600;
+    }
+    .st-key-email_btn a * { color: #0f172a !important; }
+    .st-key-email_btn a:hover {
+        border-color: var(--accent) !important;
+        background: var(--accent-light) !important;
     }
 
     [data-testid="stSidebar"] [data-testid="stImage"] img,
@@ -283,7 +294,12 @@ with st.sidebar:
     st.markdown("**Operator programmes**")
     st.markdown(badge_row(PERSONA["operators"]), unsafe_allow_html=True)
     st.divider()
-    st.link_button("Connect on LinkedIn", PERSONA["linkedin"], use_container_width=True)
+    st.link_button(
+        "Connect on LinkedIn", PERSONA["linkedin"], use_container_width=True, key="linkedin_btn"
+    )
+    st.link_button(
+        "✉️ Email Me", f"mailto:{PERSONA['email']}", use_container_width=True, key="email_btn"
+    )
     st.caption(f"📍 {PERSONA['location']}")
     st.divider()
     st.markdown(
