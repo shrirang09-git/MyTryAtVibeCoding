@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import re
 from dataclasses import dataclass
@@ -510,8 +511,60 @@ def get_screening_knowledge_response(prompt: str) -> tuple[str, Optional[str]]:
     return SCREENING_DEFAULT_RESPONSE, None
 
 
+# ---------------------------------------------------------------------------
+# Tool/function calling — the model can request a local, side-effect-free
+# lookup (an exact fact or a curated topic answer) instead of answering from
+# memory. One round trip: if the model asks for a tool, we run it locally,
+# hand the result back, and let the model produce its final answer from that.
+# ---------------------------------------------------------------------------
+
+def _run_chat_with_tools(
+    client,
+    model: str,
+    messages: list[dict],
+    tools: list[dict],
+    dispatch: dict,
+    temperature: float,
+    max_tokens: int,
+) -> Optional[str]:
+    completion = client.chat.completions.create(
+        model=model,
+        messages=messages,
+        temperature=temperature,
+        max_tokens=max_tokens,
+        tools=tools,
+        tool_choice="auto",
+    )
+    message = completion.choices[0].message
+
+    if not message.tool_calls:
+        return message.content
+
+    assistant_msg = {
+        "role": "assistant",
+        "content": message.content,
+        "tool_calls": [call.model_dump() for call in message.tool_calls],
+    }
+    messages = [*messages, assistant_msg]
+    for call in message.tool_calls:
+        fn = dispatch.get(call.function.name)
+        args = json.loads(call.function.arguments or "{}")
+        result = fn(**args) if fn else f"Unknown tool: {call.function.name}"
+        messages.append(
+            {"role": "tool", "tool_call_id": call.id, "content": result}
+        )
+
+    follow_up = client.chat.completions.create(
+        model=model,
+        messages=messages,
+        temperature=temperature,
+        max_tokens=max_tokens,
+    )
+    return follow_up.choices[0].message.content
+
+
 def _build_screening_system_prompt() -> str:
-    facts = SCREENING_FACTS
+    topics = ", ".join(SCREENING_FACTS.keys())
     return f"""You are {PERSONA['name']}'s digital twin, answering AS Shrirang in a live recruiter \
 screening call (a 30-minute phone/video screen). Answer exactly like a real person would in that \
 setting — natural, warm, professional, first person. Do NOT use bullet points, headers, or markdown \
@@ -519,23 +572,48 @@ formatting of any kind — just flowing spoken-style sentences, like a transcrip
 actually say out loud. Use contractions (I'm, I've, don't). Occasional natural connectors like \
 "Honestly," or "So," are fine, but don't overdo it.
 
-Ground every answer strictly in the facts below. Do not invent companies, dates, numbers, or details \
-that are not listed here. If asked something outside this scope, respond honestly in character — \
-something like "That's not something I've prepared an answer for yet, but happy to discuss it live" \
-— rather than making information up.
+You have a tool, get_screening_fact(topic), covering: {topics}. ALWAYS call it to fetch the exact \
+source-of-truth fact before answering a question that matches one of these topics — never answer \
+from memory or invent companies, dates, numbers, or details. Paraphrase the fetched fact \
+conversationally rather than reading it back verbatim.
 
-FACTS ABOUT ME:
-- Background: {facts['background']}
-- Visa / work authorization: {facts['visa']}
-- Why I'm leaving my current company: {facts['leaving']}
-- What I'm looking for next: {facts['next_role']}
-- Notice period: {facts['notice']}
-- Salary expectations: {facts['salary']}
-- Strengths and weaknesses: {facts['strengths_weaknesses']}
-- What I'm most proud of: {facts['proud']}
+If a question doesn't match any of these topics, respond honestly in character — something like \
+"That's not something I've prepared an answer for yet, but happy to discuss it live" — rather than \
+making information up.
 
 Keep answers roughly 60-120 words — natural interview-answer length, not an essay. Never break \
 character or mention that you are an AI or a digital twin unless directly asked."""
+
+
+def _tool_get_screening_fact(topic: str) -> str:
+    return SCREENING_FACTS.get(topic, "No fact recorded for that topic.")
+
+
+SCREENING_TOOLS = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_screening_fact",
+            "description": (
+                "Fetch the exact, source-of-truth fact for a recruiter-screening topic. Always call "
+                "this before answering a factual question about background, visa, notice period, "
+                "salary, etc. — never answer from memory alone."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "topic": {
+                        "type": "string",
+                        "enum": list(SCREENING_FACTS.keys()),
+                        "description": "Which fact to fetch.",
+                    }
+                },
+                "required": ["topic"],
+            },
+        },
+    }
+]
+SCREENING_TOOL_DISPATCH = {"get_screening_fact": _tool_get_screening_fact}
 
 
 def get_screening_ai_response(prompt: str, history: list[dict]) -> Optional[str]:
@@ -555,13 +633,10 @@ def get_screening_ai_response(prompt: str, history: list[dict]) -> Optional[str]
             messages.append({"role": msg["role"], "content": msg["content"]})
         messages.append({"role": "user", "content": prompt})
 
-        completion = client.chat.completions.create(
-            model=model,
-            messages=messages,
-            temperature=0.45,
-            max_tokens=350,
+        return _run_chat_with_tools(
+            client, model, messages, SCREENING_TOOLS, SCREENING_TOOL_DISPATCH,
+            temperature=0.45, max_tokens=350,
         )
-        return completion.choices[0].message.content
     except Exception:
         return None
 
@@ -604,8 +679,7 @@ def get_knowledge_response(prompt: str) -> tuple[str, Optional[str]]:
 
 
 def _build_system_prompt() -> str:
-    certs = ", ".join(PERSONA["certifications"])
-    domains = ", ".join(PERSONA["domains"])
+    topic_ids = ", ".join(t.id for t in KNOWLEDGE_TOPICS)
     return f"""You are the AI digital twin of {PERSONA['name']}, an {PERSONA['title']} with 14+ years in telecom BSS.
 
 Speak in first person as Shrirang. Be concise, structured, and practical — like an experienced, AI-savvy Product Manager in a stakeholder meeting.
@@ -616,9 +690,9 @@ Always structure answers with these sections when relevant:
 - **Trade-off** (what you are choosing not to do, or cost of the choice)
 - **Next step** (one concrete action)
 
-Domain expertise: {domains}
-Certifications: {certs}
-Operators: {', '.join(PERSONA['operators'])}
+You have two tools:
+- get_credentials() — fetches exact certifications, domain expertise, and operator experience. Call it before stating any of these rather than guessing from memory.
+- get_topic_answer(topic_id) — fetches Shrirang's curated, pre-written position on a specific topic (one of: {topic_ids}). Call it when the question clearly matches one of these, and ground your answer in it rather than generating a position from scratch.
 
 PM principles:
 - Design the software representation of networks/systems, not physical hardware config
@@ -630,6 +704,58 @@ PM principles:
 
 Keep responses under 250 words unless the question needs depth. Do not invent specific project metrics beyond: ~95% pre-build alignment, ~20% fewer clarification cycles, ~30% process efficiency gains on integration programmes.
 If asked something outside telecom/product, answer helpfully but briefly and tie back to PM thinking where natural."""
+
+
+def _tool_get_credentials() -> str:
+    return (
+        f"Certifications: {', '.join(PERSONA['certifications'])}. "
+        f"Domain expertise: {', '.join(PERSONA['domains'])}. "
+        f"Operators: {', '.join(PERSONA['operators'])}."
+    )
+
+
+def _tool_get_topic_answer(topic_id: str) -> str:
+    for topic in KNOWLEDGE_TOPICS:
+        if topic.id == topic_id:
+            return topic.response
+    return "No curated answer recorded for that topic id."
+
+
+PM_TOOLS = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_credentials",
+            "description": "Fetch Shrirang's exact certifications, domain expertise, and operator experience.",
+            "parameters": {"type": "object", "properties": {}, "required": []},
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_topic_answer",
+            "description": (
+                "Fetch Shrirang's curated, pre-written expert position on a specific product-management "
+                "topic, to ground your response rather than generating one from scratch."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "topic_id": {
+                        "type": "string",
+                        "enum": [t.id for t in KNOWLEDGE_TOPICS],
+                        "description": "Which curated topic answer to fetch.",
+                    }
+                },
+                "required": ["topic_id"],
+            },
+        },
+    },
+]
+PM_TOOL_DISPATCH = {
+    "get_credentials": _tool_get_credentials,
+    "get_topic_answer": _tool_get_topic_answer,
+}
 
 
 def get_ai_response(prompt: str, history: list[dict]) -> Optional[str]:
@@ -649,13 +775,10 @@ def get_ai_response(prompt: str, history: list[dict]) -> Optional[str]:
             messages.append({"role": msg["role"], "content": msg["content"]})
         messages.append({"role": "user", "content": prompt})
 
-        completion = client.chat.completions.create(
-            model=model,
-            messages=messages,
-            temperature=0.7,
-            max_tokens=600,
+        return _run_chat_with_tools(
+            client, model, messages, PM_TOOLS, PM_TOOL_DISPATCH,
+            temperature=0.7, max_tokens=600,
         )
-        return completion.choices[0].message.content
     except Exception:
         return None
 
