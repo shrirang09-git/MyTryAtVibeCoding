@@ -526,7 +526,10 @@ def _run_chat_with_tools(
     dispatch: dict,
     temperature: float,
     max_tokens: int,
-) -> Optional[str]:
+) -> tuple[Optional[str], bool]:
+    """Returns (content, grounded) — grounded is True only if the model actually
+    called a tool. Callers that must never improvise personal facts (screening
+    mode) can use `grounded` to discard an answer that has no fact behind it."""
     completion = client.chat.completions.create(
         model=model,
         messages=messages,
@@ -538,7 +541,7 @@ def _run_chat_with_tools(
     message = completion.choices[0].message
 
     if not message.tool_calls:
-        return message.content
+        return message.content, False
 
     assistant_msg = {
         "role": "assistant",
@@ -560,7 +563,7 @@ def _run_chat_with_tools(
         temperature=temperature,
         max_tokens=max_tokens,
     )
-    return follow_up.choices[0].message.content
+    return follow_up.choices[0].message.content, True
 
 
 def _build_screening_system_prompt() -> str:
@@ -572,14 +575,20 @@ formatting of any kind — just flowing spoken-style sentences, like a transcrip
 actually say out loud. Use contractions (I'm, I've, don't). Occasional natural connectors like \
 "Honestly," or "So," are fine, but don't overdo it.
 
-You have a tool, get_screening_fact(topic), covering: {topics}. ALWAYS call it to fetch the exact \
-source-of-truth fact before answering a question that matches one of these topics — never answer \
-from memory or invent companies, dates, numbers, or details. Paraphrase the fetched fact \
-conversationally rather than reading it back verbatim.
+You have a tool, get_screening_fact(topic), covering ONLY: {topics}. ALWAYS call it to fetch the \
+exact source-of-truth fact before answering a question that matches one of these topics. Paraphrase \
+the fetched fact conversationally, but only state things that fact actually supports — never add \
+detail, skills, tools, or experience that aren't in it.
 
-If a question doesn't match any of these topics, respond honestly in character — something like \
-"That's not something I've prepared an answer for yet, but happy to discuss it live" — rather than \
-making information up.
+If a question does not clearly match one of these topics — including questions about specific \
+technical skills, tools, or programming languages, which none of these topics cover — you MUST \
+decline honestly instead of improvising. Say something close to: "That's not something I've \
+prepared an answer for yet, but happy to discuss it live." Do NOT soften this into a vague, \
+plausible-sounding non-answer to seem competent — for example, if asked about a specific \
+programming language, do NOT say something like "I have experience with several languages"; say \
+you haven't prepped that and would rather cover it live. A confident-sounding non-answer is worse \
+than an honest "I haven't prepped that" — never invent companies, dates, numbers, or skills either \
+way.
 
 Keep answers roughly 60-120 words — natural interview-answer length, not an essay. Never break \
 character or mention that you are an AI or a digital twin unless directly asked."""
@@ -633,10 +642,15 @@ def get_screening_ai_response(prompt: str, history: list[dict]) -> Optional[str]
             messages.append({"role": msg["role"], "content": msg["content"]})
         messages.append({"role": "user", "content": prompt})
 
-        return _run_chat_with_tools(
+        content, grounded = _run_chat_with_tools(
             client, model, messages, SCREENING_TOOLS, SCREENING_TOOL_DISPATCH,
             temperature=0.45, max_tokens=350,
         )
+        # Screening mode answers personal, factual questions about Shrirang —
+        # if the model never called get_screening_fact, it has no real basis
+        # for the answer and is improvising. Discard it and let the caller
+        # fall back to the deterministic knowledge base instead.
+        return content if grounded else None
     except Exception:
         return None
 
@@ -775,10 +789,14 @@ def get_ai_response(prompt: str, history: list[dict]) -> Optional[str]:
             messages.append({"role": msg["role"], "content": msg["content"]})
         messages.append({"role": "user", "content": prompt})
 
-        return _run_chat_with_tools(
+        content, _grounded = _run_chat_with_tools(
             client, model, messages, PM_TOOLS, PM_TOOL_DISPATCH,
             temperature=0.7, max_tokens=600,
         )
+        # PM Deep-Dive mode gives general product-management reasoning, not
+        # personal biographical facts — a tool call isn't required for every
+        # answer to be legitimate, unlike screening mode.
+        return content
     except Exception:
         return None
 
