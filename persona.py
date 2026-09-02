@@ -1,4 +1,4 @@
-"""Product Owner digital twin — persona, knowledge base, and response engine."""
+"""AI Product Manager digital twin — persona, knowledge base, and response engine."""
 
 from __future__ import annotations
 
@@ -35,8 +35,8 @@ def has_avatar_image() -> bool:
 
 PERSONA = {
     "name": "Shrirang Deshpande",
-    "title": "Product Owner",
-    "tagline": "Telecom BSS · Digital Transformation . AI Enthusiast",
+    "title": "AI Product Manager",
+    "tagline": "Telecom BSS · AI-Driven Product Strategy · Digital Transformation",
     "linkedin": "https://www.linkedin.com/in/shrirang-deshpande-14870034/",
     "email": "shrirang09@gmail.com",
     "location": "Reading, UK",
@@ -57,11 +57,13 @@ PERSONA = {
 }
 
 SAMPLE_QUESTIONS = [
-    "How do you prioritise a backlog when stakeholders disagree?",
+    "How do you prioritise a roadmap when stakeholders disagree?",
+    "How do you use AI in your product management work?",
     "What is a digital twin in telecom OSS?",
+    "How do you define success metrics for a new feature?",
     "How would you handle vague requirements from business?",
-    "Explain DWDM from a Product Owner perspective.",
-    "How do you write good user stories for integration work?",
+    "What makes a strong PRD?",
+    "Explain DWDM from a Product Manager's perspective.",
     "What's your approach to legacy-to-digital migration?",
 ]
 
@@ -80,7 +82,7 @@ class KnowledgeTopic:
 KNOWLEDGE_TOPICS: list[KnowledgeTopic] = [
     KnowledgeTopic(
         id="priority",
-        keywords=["priorit", "backlog", "rank", "must have", "mvp", "trade-off", "trade off", "wsjf", "roadmap"],
+        keywords=["priorit", "backlog", "rank", "must have", "mvp", "trade-off", "trade off", "wsjf"],
         weight=3,
         response="""**Recommendation:** Prioritise by **business value × risk reduction**, not loudest voice or easiest build.
 
@@ -133,6 +135,78 @@ KNOWLEDGE_TOPICS: list[KnowledgeTopic] = [
 *I've presented solution designs to C-level stakeholders and acted as liaison across business, engineering, DevOps, QA, and vendors throughout release cycles.*""",
     ),
     KnowledgeTopic(
+        id="roadmap",
+        keywords=["roadmap", "roadmapping", "theme", "quarterly plan", "product strategy", "vision", "outcome-based"],
+        weight=3,
+        response="""**Recommendation:** A roadmap communicates **outcomes and themes**, not a fixed feature list with dates you'll be held to.
+
+**Approach:**
+- Structure by theme/outcome (e.g. "reduce activation failures") rather than a queue of features
+- Time-horizon it loosely: Now / Next / Later — commit hard only to "Now"
+- Tie every theme to a metric that proves it worked
+- Revisit and re-baseline every planning cycle as evidence comes in — a roadmap is a living plan, not a promise
+
+**Trade-off:** Less specificity upfront trades away false certainty for a roadmap stakeholders actually trust over time.
+
+**Next step:** Rebuild your next-quarter roadmap around 3-4 outcome themes, each with a target metric.
+
+*I run roadmap and portfolio-level planning across catalog, ordering, billing, and CPQ workstreams on multi-year programmes.*""",
+    ),
+    KnowledgeTopic(
+        id="metrics",
+        keywords=["metric", "okr", "kpi", "success criteria", "north star", "measure success", "outcome"],
+        weight=3,
+        response="""**Recommendation:** Define the metric **before** you build the feature — not as a retrospective justification.
+
+**Approach:**
+- Pick one primary metric tied to the business outcome (adoption, cycle time, error rate, revenue)
+- Set a baseline and a target before build starts
+- Use leading indicators (usage, early feedback) alongside lagging ones (revenue, churn) so you're not flying blind for a quarter
+- Review against the metric in the sprint/PI review, not just scope delivered
+
+**Trade-off:** Picking one primary metric forces clarity but means resisting the urge to track everything.
+
+**Next step:** For your current top initiative, write down the single metric that would tell you it worked or didn't.
+
+*On BSS programmes I've tracked cycle-time and rework metrics to validate discovery investment — e.g. ~20% fewer clarification cycles after tightening upfront requirements.*""",
+    ),
+    KnowledgeTopic(
+        id="prd",
+        keywords=["prd", "product requirement", "product spec", "brd", "requirement doc", "spec document"],
+        weight=3,
+        response="""**Recommendation:** A PRD should be short enough that engineering actually reads it, and precise enough that they don't have to guess.
+
+**Approach:**
+- Problem statement first: who is affected, what's broken today, why now
+- Goals and non-goals — an explicit non-goals section prevents scope creep more than any review meeting
+- Success metrics and key user flows, not implementation detail
+- Open questions section — surfaces risk instead of hiding it behind false confidence
+
+**Trade-off:** A tighter PRD takes more thinking upfront but prevents the doc from becoming shelfware nobody references mid-build.
+
+**Next step:** Take your last PRD and cut it by a third — if a section doesn't change a decision, it doesn't belong.
+
+*I write PRDs and solution designs that get presented directly to C-level stakeholders — clarity there matters as much as technical accuracy.*""",
+    ),
+    KnowledgeTopic(
+        id="ai_in_pm",
+        keywords=["ai in product", "use ai", "artificial intelligence", "genai", "generative ai", "llm", "chatgpt", "copilot", "ai tool", "ai-powered", "ai adoption", "ai strategy"],
+        weight=4,
+        response="""**Recommendation:** AI is a force-multiplier for the research- and drafting-heavy parts of PM work — not a replacement for judgment on trade-offs or stakeholder trust.
+
+**Approach:**
+- Discovery: use AI to synthesise interview notes, support tickets, and feedback into themes faster — then validate patterns with real stakeholders
+- Drafting: first-pass PRDs, user stories, and release notes from AI, edited and owned by me — speed on drafting, not on decisions
+- Backlog triage: AI-assisted clustering and duplicate-detection on large backlogs, so refinement time goes to genuinely ambiguous items
+- Data: pairing AI summarisation with real usage/BSS data to spot patterns a manual review would miss
+
+**Trade-off:** AI accelerates the first draft; I still own accuracy, stakeholder alignment, and the final call — it doesn't remove that accountability.
+
+**Next step:** Pick one recurring, low-judgment task (meeting notes, first-draft user stories) and pilot an AI-assisted workflow for it this sprint.
+
+*This twin you're talking to is itself an example — an AI-driven build I designed and shipped to make my product thinking easy to explore.*""",
+    ),
+    KnowledgeTopic(
         id="digital_twin",
         keywords=["digital twin", "inventory", "network model", "topology", "graph", "single source of truth"],
         weight=4,
@@ -148,7 +222,7 @@ KNOWLEDGE_TOPICS: list[KnowledgeTopic] = [
 
 **Next step:** Identify the top 3 operational pain points (e.g. failed activations, slow provisioning) and map them to twin capabilities.
 
-*PO lens: I design the **software representation** of the network — translating engineer workflows into data models and features.*""",
+*PM lens: I design the **software representation** of the network — translating engineer workflows into data models and features.*""",
     ),
     KnowledgeTopic(
         id="dwdm",
@@ -158,7 +232,7 @@ KNOWLEDGE_TOPICS: list[KnowledgeTopic] = [
 
 **Product / OSS relevance:** The inventory system must model optical channels with route, capacity, free/used status, and ROADM dependencies so planners can provision without overbooking.
 
-**PO approach:** I don't configure DWDM hardware — I work with engineers to define how optical channels, wavelength allocation, and capacity appear in the inventory model and provisioning workflows.
+**PM approach:** I don't configure DWDM hardware — I work with engineers to define how optical channels, wavelength allocation, and capacity appear in the inventory model and provisioning workflows.
 
 **Next step:** Define user stories for "view available optical channels between node A and B" and "validate capacity before design."
 
@@ -172,7 +246,7 @@ KNOWLEDGE_TOPICS: list[KnowledgeTopic] = [
 
 **Product / OSS relevance:** The twin must model ROADM nodes, pass-through vs drop behaviour, routing options, and constraints — enabling questions like *"If link A–B fails, can we reroute via C?"*
 
-**PO approach:** Define requirements for dynamic optical routing in the inventory model; validate with network engineers using real fault scenarios.
+**PM approach:** Define requirements for dynamic optical routing in the inventory model; validate with network engineers using real fault scenarios.
 
 **Trade-off:** Modelling routing flexibility is complex upfront but unlocks faster recovery and better fibre utilisation.
 
@@ -260,14 +334,15 @@ KNOWLEDGE_TOPICS: list[KnowledgeTopic] = [
 
 **What I do:**
 - Bridge business and engineering on large-scale catalog, ordering, billing, and charging programmes
-- Elicit requirements, design processes, write user stories, and drive backlog prioritisation
+- Set product strategy and roadmap, define success metrics, and drive prioritisation
+- Use AI to accelerate discovery, drafting, and backlog triage — while owning the judgment calls myself
 - Specify integration (REST, Kafka, TMF APIs) and legacy-to-digital migration paths
 
 **Certifications:** {', '.join(PERSONA['certifications'][:3])} (+ AWS Cloud Practitioner)
 
 **Operator experience:** {', '.join(PERSONA['operators'])}
 
-**How I answer:** Structured PO thinking — recommendation, approach, trade-offs, and a concrete next step. Ask me about prioritisation, requirements, BSS/OSS, digital twins, or Agile delivery.
+**How I answer:** Structured PM thinking — recommendation, approach, trade-offs, and a concrete next step. Ask me about roadmapping, prioritisation, PRDs, metrics, AI in product management, BSS/OSS, digital twins, or Agile delivery.
 
 [Connect on LinkedIn]({PERSONA['linkedin']})""",
     ),
@@ -282,9 +357,9 @@ DEFAULT_RESPONSE = """**Recommendation:** Start by clarifying the **objective** 
 
 **Trade-off:** Scope vs speed — faster delivery with unclear scope usually costs more later.
 
-**Next step:** Tell me more context — is this about prioritisation, requirements, stakeholders, BSS/OSS, digital twin, or Agile delivery? I can go deeper.
+**Next step:** Tell me more context — is this about roadmapping, prioritisation, requirements, metrics, PRDs, AI in product management, stakeholders, BSS/OSS, digital twin, or Agile delivery? I can go deeper.
 
-*Try: "How do you prioritise when stakeholders disagree?" or "What is a digital twin in telecom?"*"""
+*Try: "How do you prioritise a roadmap when stakeholders disagree?" or "How do you use AI in your product management work?"*"""
 
 # ---------------------------------------------------------------------------
 # Recruiter screening mode — humanized, first-person, grounded strictly in
@@ -531,12 +606,12 @@ def get_knowledge_response(prompt: str) -> tuple[str, Optional[str]]:
 def _build_system_prompt() -> str:
     certs = ", ".join(PERSONA["certifications"])
     domains = ", ".join(PERSONA["domains"])
-    return f"""You are the AI digital twin of {PERSONA['name']}, a {PERSONA['title']} with 14+ years in telecom BSS.
+    return f"""You are the AI digital twin of {PERSONA['name']}, an {PERSONA['title']} with 14+ years in telecom BSS.
 
-Speak in first person as Shrirang. Be concise, structured, and practical — like an experienced Product Owner in a stakeholder meeting.
+Speak in first person as Shrirang. Be concise, structured, and practical — like an experienced, AI-savvy Product Manager in a stakeholder meeting.
 
 Always structure answers with these sections when relevant:
-- **Recommendation** (clear PO decision or stance)
+- **Recommendation** (clear PM decision or stance)
 - **Approach** (bulleted steps)
 - **Trade-off** (what you are choosing not to do, or cost of the choice)
 - **Next step** (one concrete action)
@@ -545,15 +620,16 @@ Domain expertise: {domains}
 Certifications: {certs}
 Operators: {', '.join(PERSONA['operators'])}
 
-PO principles:
+PM principles:
 - Design the software representation of networks/systems, not physical hardware config
-- Prioritise business value and risk reduction
+- Set roadmap and priority by business value and risk reduction, backed by a clear success metric
 - Never proceed on vague requirements
+- Use AI to accelerate discovery, drafting, and backlog triage — but own the judgment calls and stakeholder trust yourself
 - Bridge business, engineering, and operations
 - Use data and demos to align stakeholders
 
 Keep responses under 250 words unless the question needs depth. Do not invent specific project metrics beyond: ~95% pre-build alignment, ~20% fewer clarification cycles, ~30% process efficiency gains on integration programmes.
-If asked something outside telecom/product, answer helpfully but briefly and tie back to PO thinking where natural."""
+If asked something outside telecom/product, answer helpfully but briefly and tie back to PM thinking where natural."""
 
 
 def get_ai_response(prompt: str, history: list[dict]) -> Optional[str]:

@@ -49,7 +49,7 @@ ASSISTANT_AVATAR = get_avatar()
 # ---------------------------------------------------------------------------
 
 st.set_page_config(
-    page_title="Shrirang PO Twin",
+    page_title="Shrirang AI PM Twin",
     page_icon="🎯",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -275,8 +275,8 @@ with st.sidebar:
     st.divider()
     st.markdown(
         '<p class="footer-note">Built by Shrirang Deshpande · '
-        "CSPO · SAFe POPM · Telecom BSS Product Owner · "
-        "This twin reflects professional PO thinking — not official employer advice.</p>",
+        "CSPO · SAFe POPM · Telecom BSS AI Product Manager · "
+        "This twin reflects professional PM thinking — not official employer advice.</p>",
         unsafe_allow_html=True,
     )
 
@@ -301,11 +301,11 @@ with st.container(key="mode_switch"):
             st.rerun()
     with mode_col2:
         if st.button(
-            "🎯 PO Deep-Dive",
+            "🎯 AI PM Deep-Dive",
             use_container_width=True,
-            type="primary" if st.session_state.mode == "PO Deep-Dive" else "secondary",
+            type="primary" if st.session_state.mode == "AI PM Deep-Dive" else "secondary",
         ):
-            st.session_state.mode = "PO Deep-Dive"
+            st.session_state.mode = "AI PM Deep-Dive"
             st.rerun()
 
 mode = st.session_state.mode
@@ -331,10 +331,10 @@ with st.container(border=True, key="header_card"):
                 unsafe_allow_html=True,
             )
         else:
-            st.markdown('<p class="main-header">AI Product Owner Twin</p>', unsafe_allow_html=True)
+            st.markdown('<p class="main-header">AI Product Manager Twin</p>', unsafe_allow_html=True)
             st.markdown(
-                '<p class="sub-header">Ask product, BSS, or digital-twin questions — '
-                "answered the way a senior Telecom PO would.</p>",
+                '<p class="sub-header">Ask about roadmapping, prioritisation, PRDs, metrics, or AI in '
+                "product management — answered the way an AI-driven Telecom PM would.</p>",
                 unsafe_allow_html=True,
             )
     with col_status:
@@ -377,7 +377,7 @@ for message in st.session_state[messages_key]:
 chat_placeholder = (
     "Ask about background, visa status, why you're leaving, notice period..."
     if is_screening
-    else "Ask about prioritisation, requirements, BSS/OSS, digital twin, Agile..."
+    else "Ask about roadmapping, prioritisation, PRDs, metrics, AI in product management..."
 )
 # st.chat_input() must be called unconditionally on every run, or the widget
 # vanishes for the rest of the session — see project notes on this gotcha.
@@ -390,7 +390,7 @@ if prompt:
         st.markdown(prompt)
     st.session_state[messages_key].append({"role": "user", "content": prompt})
 
-    spinner_text = "Thinking about how to answer that..." if is_screening else "Thinking like a PO..."
+    spinner_text = "Thinking about how to answer that..." if is_screening else "Thinking like a PM..."
     with st.chat_message("assistant", avatar=ASSISTANT_AVATAR):
         with st.spinner(spinner_text):
             if is_screening:
