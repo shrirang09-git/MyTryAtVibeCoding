@@ -220,6 +220,15 @@ st.markdown(
        out-specificity the sidebar-wide `[data-testid="stSidebar"] * {
        color: #0f172a }` rule above, which otherwise wins on the button's
        inner text node. */
+    .st-key-calendly_btn a {
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%) !important;
+        border: none !important;
+        color: #ffffff !important;
+        font-weight: 700;
+        box-shadow: var(--shadow-sm);
+    }
+    .st-key-calendly_btn a * { color: #ffffff !important; }
+    .st-key-calendly_btn a:hover { opacity: 0.92; }
     .st-key-linkedin_btn a {
         background: #0a66c2 !important;
         border-color: #0a66c2 !important;
@@ -294,6 +303,9 @@ with st.sidebar:
     st.markdown("**Operator programmes**")
     st.markdown(badge_row(PERSONA["operators"]), unsafe_allow_html=True)
     st.divider()
+    st.link_button(
+        "📅 Schedule a Call", PERSONA["calendly"], use_container_width=True, key="calendly_btn"
+    )
     st.link_button(
         "Connect on LinkedIn", PERSONA["linkedin"], use_container_width=True, key="linkedin_btn"
     )

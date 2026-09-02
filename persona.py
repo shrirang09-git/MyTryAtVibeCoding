@@ -40,6 +40,7 @@ PERSONA = {
     "tagline": "Telecom BSS · AI-Driven Product Strategy · Digital Transformation",
     "linkedin": "https://www.linkedin.com/in/shrirang-deshpande-14870034/",
     "email": "shrirang09@gmail.com",
+    "calendly": "https://calendly.com/shrirang09",
     "location": "Reading, UK",
     "certifications": [
         "Certified Scrum Product Owner (CSPO)",
