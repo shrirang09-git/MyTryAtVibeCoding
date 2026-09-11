@@ -15,6 +15,10 @@ from persona import (
 
 load_dotenv()
 
+# Temporarily showing Recruiter Screening only — flip back to True to
+# restore the AI PM Deep-Dive mode switch.
+PM_MODE_ENABLED = False
+
 # Avatar — kept here so cloud deploy never depends on persona.py exports
 _APP_ROOT = Path(__file__).resolve().parent
 _AVATAR_CANDIDATES = (
@@ -330,24 +334,27 @@ with st.sidebar:
 if "mode" not in st.session_state:
     st.session_state.mode = "Recruiter Screening"
 
-with st.container(key="mode_switch"):
-    mode_col1, mode_col2 = st.columns(2)
-    with mode_col1:
-        if st.button(
-            "🎙️ Recruiter Screening",
-            use_container_width=True,
-            type="primary" if st.session_state.mode == "Recruiter Screening" else "secondary",
-        ):
-            st.session_state.mode = "Recruiter Screening"
-            st.rerun()
-    with mode_col2:
-        if st.button(
-            "🎯 AI PM Deep-Dive",
-            use_container_width=True,
-            type="primary" if st.session_state.mode == "AI PM Deep-Dive" else "secondary",
-        ):
-            st.session_state.mode = "AI PM Deep-Dive"
-            st.rerun()
+if PM_MODE_ENABLED:
+    with st.container(key="mode_switch"):
+        mode_col1, mode_col2 = st.columns(2)
+        with mode_col1:
+            if st.button(
+                "🎙️ Recruiter Screening",
+                use_container_width=True,
+                type="primary" if st.session_state.mode == "Recruiter Screening" else "secondary",
+            ):
+                st.session_state.mode = "Recruiter Screening"
+                st.rerun()
+        with mode_col2:
+            if st.button(
+                "🎯 AI PM Deep-Dive",
+                use_container_width=True,
+                type="primary" if st.session_state.mode == "AI PM Deep-Dive" else "secondary",
+            ):
+                st.session_state.mode = "AI PM Deep-Dive"
+                st.rerun()
+else:
+    st.session_state.mode = "Recruiter Screening"
 
 mode = st.session_state.mode
 is_screening = mode == "Recruiter Screening"
