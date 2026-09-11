@@ -81,12 +81,45 @@ st.markdown(
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
 
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(14px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes gradientDrift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    @keyframes pulseDot {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.45); }
+        50% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+    }
+
+    /* Slow, subtle ambient wash on the main content area — reads as
+       "alive" without ever competing with the actual content on top. */
+    [data-testid="stAppViewContainer"] {
+        background: linear-gradient(120deg, #ffffff 0%, #f8fafc 30%, #eef2f7 50%, #f8fafc 70%, #ffffff 100%);
+        background-size: 300% 300%;
+        animation: gradientDrift 20s ease infinite;
+    }
+
     /* ---- Header ---- */
     .main-header {
-        font-size: 2rem; font-weight: 800; margin-bottom: 0.2rem;
+        font-size: 2.1rem; font-weight: 800; margin-bottom: 0.2rem;
         color: var(--accent-dark); letter-spacing: -0.02em;
     }
-    .sub-header { color: var(--slate); font-size: 1rem; margin-bottom: 0; }
+    .sub-header { color: var(--slate); font-size: 1rem; margin-bottom: 0.5rem; }
+
+    .live-badge {
+        display: inline-flex; align-items: center; gap: 0.45rem;
+        background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0;
+        padding: 0.28rem 0.8rem; border-radius: 999px;
+        font-size: 0.78rem; font-weight: 600; margin-top: 0.35rem;
+    }
+    .live-dot {
+        width: 8px; height: 8px; border-radius: 50%; background: #22c55e;
+        animation: pulseDot 1.8s ease-in-out infinite;
+    }
 
     .st-key-header_card {
         background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
@@ -94,6 +127,21 @@ st.markdown(
         box-shadow: var(--shadow-md);
         border: 1px solid var(--border) !important;
         padding: 0.25rem 0.5rem;
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .stats-strip {
+        display: flex; justify-content: space-around; flex-wrap: wrap;
+        gap: 1rem; margin: 1.1rem 0.5rem 0.4rem; padding-top: 1rem;
+        border-top: 1px solid var(--border);
+    }
+    .stat { text-align: center; min-width: 110px; }
+    .stat-num {
+        font-size: 1.6rem; font-weight: 800; color: var(--accent-dark); letter-spacing: -0.02em;
+    }
+    .stat-label {
+        font-size: 0.72rem; color: var(--slate); text-transform: uppercase;
+        letter-spacing: 0.05em; margin-top: 0.15rem;
     }
 
     /* ---- Mode switch ---- */
@@ -132,6 +180,8 @@ st.markdown(
         border-color: var(--accent);
         background: var(--accent-light);
         color: var(--accent-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
     }
 
     /* ---- Status pill (AI mode / Knowledge mode) ---- */
@@ -152,6 +202,7 @@ st.markdown(
         padding: 0.9rem 1.1rem;
         margin-bottom: 0.75rem;
         box-shadow: var(--shadow-sm);
+        animation: fadeInUp 0.4s ease-out;
     }
     [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
         background: var(--accent-light);
@@ -262,6 +313,9 @@ st.markdown(
         border: 3px solid var(--accent);
         object-fit: cover;
         box-shadow: 0 0 0 4px rgba(71, 85, 105, 0.12);
+    }
+    .header-avatar [data-testid="stImage"] img {
+        box-shadow: 0 0 0 4px rgba(71, 85, 105, 0.15), 0 10px 24px rgba(15, 23, 42, 0.15);
     }
 
     /* ---- Footer (lives at the bottom of the sidebar — see note below) ---- */
@@ -385,12 +439,28 @@ with st.container(border=True, key="header_card"):
                 "product management — answered the way an AI-driven Telecom PM would.</p>",
                 unsafe_allow_html=True,
             )
+        st.markdown(
+            '<span class="live-badge"><span class="live-dot"></span>Open to new opportunities</span>',
+            unsafe_allow_html=True,
+        )
     with col_status:
         has_key = bool(__import__("os").getenv("OPENAI_API_KEY"))
         if has_key and use_ai:
             st.success("AI mode")
         else:
             st.info("Knowledge mode")
+
+    st.markdown(
+        """
+        <div class="stats-strip">
+            <div class="stat"><div class="stat-num">14+</div><div class="stat-label">Years Experience</div></div>
+            <div class="stat"><div class="stat-num">20+</div><div class="stat-label">Products Owned</div></div>
+            <div class="stat"><div class="stat-num">3</div><div class="stat-label">Certifications</div></div>
+            <div class="stat"><div class="stat-num">2</div><div class="stat-label">Continents Delivered</div></div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 st.write("")
 
