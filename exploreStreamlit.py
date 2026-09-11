@@ -85,22 +85,44 @@ st.markdown(
         from { opacity: 0; transform: translateY(14px); }
         to { opacity: 1; transform: translateY(0); }
     }
-    @keyframes gradientDrift {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+    @keyframes auroraDrift {
+        0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+        100% { transform: translate(-4%, 3%) scale(1.15) rotate(6deg); }
     }
     @keyframes pulseDot {
         0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.45); }
         50% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
     }
 
-    /* Slow, subtle ambient wash on the main content area — reads as
-       "alive" without ever competing with the actual content on top. */
+    /* Futuristic animated backdrop: a slow-drifting, glowing gradient mesh
+       plus a faint dot-grid texture, both pinned behind actual content via
+       negative z-index. Content cards stay solid white/opaque on top, so
+       readability is untouched — only the empty canvas around them glows. */
     [data-testid="stAppViewContainer"] {
-        background: linear-gradient(120deg, #ffffff 0%, #f8fafc 30%, #eef2f7 50%, #f8fafc 70%, #ffffff 100%);
-        background-size: 300% 300%;
-        animation: gradientDrift 20s ease infinite;
+        position: relative;
+        background: #f7f9fc;
+    }
+    [data-testid="stAppViewContainer"]::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+            radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.24) 0%, transparent 42%),
+            radial-gradient(circle at 85% 15%, rgba(56, 189, 248, 0.22) 0%, transparent 42%),
+            radial-gradient(circle at 25% 88%, rgba(168, 85, 247, 0.20) 0%, transparent 42%),
+            radial-gradient(circle at 92% 80%, rgba(20, 184, 166, 0.18) 0%, transparent 42%);
+        animation: auroraDrift 24s ease-in-out infinite alternate;
+    }
+    [data-testid="stAppViewContainer"]::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background-image: radial-gradient(circle, rgba(100, 116, 139, 0.18) 1px, transparent 1px);
+        background-size: 26px 26px;
     }
 
     /* ---- Header ---- */
@@ -122,10 +144,12 @@ st.markdown(
     }
 
     .st-key-header_card {
-        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        background: rgba(255, 255, 255, 0.82);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         border-radius: var(--radius-lg) !important;
         box-shadow: var(--shadow-md);
-        border: 1px solid var(--border) !important;
+        border: 1px solid rgba(226, 232, 240, 0.8) !important;
         padding: 0.25rem 0.5rem;
         animation: fadeInUp 0.6s ease-out;
     }
