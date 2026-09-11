@@ -294,7 +294,16 @@ st.markdown(
     [data-testid="stSidebar"] {
         background: #ffffff !important;
         border-right: 1px solid var(--border);
+        overflow-y: auto !important;
     }
+    /* Make the scrollbar itself visible/obvious rather than relying on the
+       browser default, which some OS/browser combos hide until hovered. */
+    [data-testid="stSidebar"]::-webkit-scrollbar { width: 8px; }
+    [data-testid="stSidebar"]::-webkit-scrollbar-track { background: transparent; }
+    [data-testid="stSidebar"]::-webkit-scrollbar-thumb {
+        background: var(--slate-light); border-radius: 999px;
+    }
+    [data-testid="stSidebar"]::-webkit-scrollbar-thumb:hover { background: var(--slate); }
     [data-testid="stSidebar"] * { color: #0f172a; }
     [data-testid="stSidebar"] h3 { color: #0f172a; font-weight: 700; }
     [data-testid="stSidebar"] strong { color: #0f172a; }
@@ -375,6 +384,21 @@ with st.sidebar:
         f"{PERSONA['tagline']}"
     )
 
+    # Contact/scheduling CTAs placed right up top — deliberately above the
+    # toggle and the long badge lists below, so they're visible immediately
+    # with zero scrolling, regardless of sidebar height or scroll discovery.
+    st.link_button(
+        "📅 Schedule a Call", PERSONA["calendly"], use_container_width=True, key="calendly_btn"
+    )
+    st.link_button(
+        "Connect on LinkedIn", PERSONA["linkedin"], use_container_width=True, key="linkedin_btn"
+    )
+    st.link_button(
+        "✉️ Email Me", f"mailto:{PERSONA['email']}", use_container_width=True, key="email_btn"
+    )
+    st.caption(f"📍 {PERSONA['location']}")
+
+    st.divider()
     use_ai = st.toggle(
         "Use AI (OpenAI)",
         value=bool(__import__("os").getenv("OPENAI_API_KEY")),
@@ -390,17 +414,6 @@ with st.sidebar:
     st.divider()
     st.markdown("**Operator programmes**")
     st.markdown(badge_row(PERSONA["operators"]), unsafe_allow_html=True)
-    st.divider()
-    st.link_button(
-        "📅 Schedule a Call", PERSONA["calendly"], use_container_width=True, key="calendly_btn"
-    )
-    st.link_button(
-        "Connect on LinkedIn", PERSONA["linkedin"], use_container_width=True, key="linkedin_btn"
-    )
-    st.link_button(
-        "✉️ Email Me", f"mailto:{PERSONA['email']}", use_container_width=True, key="email_btn"
-    )
-    st.caption(f"📍 {PERSONA['location']}")
     st.divider()
     st.markdown(
         '<p class="footer-note">Built by Shrirang Deshpande · '
