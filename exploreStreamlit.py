@@ -104,24 +104,24 @@ st.markdown(
     }
     [data-testid="stAppViewContainer"]::before {
         content: "";
-        position: absolute;
+        position: fixed;
         inset: 0;
         z-index: -1;
         pointer-events: none;
         background:
-            radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.24) 0%, transparent 42%),
-            radial-gradient(circle at 85% 15%, rgba(56, 189, 248, 0.22) 0%, transparent 42%),
-            radial-gradient(circle at 25% 88%, rgba(168, 85, 247, 0.20) 0%, transparent 42%),
-            radial-gradient(circle at 92% 80%, rgba(20, 184, 166, 0.18) 0%, transparent 42%);
+            radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.34) 0%, transparent 42%),
+            radial-gradient(circle at 85% 15%, rgba(56, 189, 248, 0.32) 0%, transparent 42%),
+            radial-gradient(circle at 25% 88%, rgba(168, 85, 247, 0.30) 0%, transparent 42%),
+            radial-gradient(circle at 92% 80%, rgba(20, 184, 166, 0.28) 0%, transparent 42%);
         animation: auroraDrift 24s ease-in-out infinite alternate;
     }
     [data-testid="stAppViewContainer"]::after {
         content: "";
-        position: absolute;
+        position: fixed;
         inset: 0;
         z-index: -1;
         pointer-events: none;
-        background-image: radial-gradient(circle, rgba(100, 116, 139, 0.18) 1px, transparent 1px);
+        background-image: radial-gradient(circle, rgba(100, 116, 139, 0.22) 1px, transparent 1px);
         background-size: 26px 26px;
     }
 
@@ -156,15 +156,21 @@ st.markdown(
 
     .stats-strip {
         display: flex; justify-content: space-around; flex-wrap: wrap;
-        gap: 1rem; margin: 1.1rem 0.5rem 0.4rem; padding-top: 1rem;
+        gap: 0.85rem; margin: 1.1rem 0.5rem 0.4rem; padding-top: 1rem;
         border-top: 1px solid var(--border);
     }
-    .stat { text-align: center; min-width: 110px; }
-    .stat-num {
-        font-size: 1.6rem; font-weight: 800; color: var(--accent-dark); letter-spacing: -0.02em;
+    .stat {
+        text-align: center; min-width: 130px;
+        background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+        border-radius: var(--radius-md);
+        padding: 0.75rem 1rem;
+        box-shadow: 0 4px 14px rgba(124, 58, 237, 0.28);
+        transition: transform 0.15s ease;
     }
+    .stat:hover { transform: translateY(-2px); }
+    .stat-num { font-size: 1.6rem; font-weight: 800; color: #ffffff; letter-spacing: -0.02em; }
     .stat-label {
-        font-size: 0.72rem; color: var(--slate); text-transform: uppercase;
+        font-size: 0.72rem; color: #e9d5ff; text-transform: uppercase;
         letter-spacing: 0.05em; margin-top: 0.15rem;
     }
 
