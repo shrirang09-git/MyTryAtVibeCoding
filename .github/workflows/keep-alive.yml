@@ -1,0 +1,18 @@
+name: Keep Streamlit app awake
+
+# Streamlit Community Cloud puts apps to sleep after a stretch of no
+# visitors, requiring a manual "wake up" click before anyone can use them.
+# This just visits the app on a schedule so it never goes quiet long enough
+# to hibernate. Free on a public repo (unlimited Actions minutes).
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping the app
+        run: curl -sS -m 60 "https://po-twin.streamlit.app/" -o /dev/null
