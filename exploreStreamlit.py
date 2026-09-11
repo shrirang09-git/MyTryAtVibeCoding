@@ -486,7 +486,7 @@ with st.container(border=True, key="header_card"):
             <div class="stat"><div class="stat-num">14+</div><div class="stat-label">Years Experience</div></div>
             <div class="stat"><div class="stat-num">20+</div><div class="stat-label">Products Owned</div></div>
             <div class="stat"><div class="stat-num">3</div><div class="stat-label">Certifications</div></div>
-            <div class="stat"><div class="stat-num">2</div><div class="stat-label">Continents Delivered</div></div>
+            <div class="stat"><div class="stat-num">4+</div><div class="stat-label">Projects Delivered Across Continents</div></div>
         </div>
         """,
         unsafe_allow_html=True,
