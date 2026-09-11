@@ -294,7 +294,17 @@ st.markdown(
     [data-testid="stSidebar"] {
         background: #ffffff !important;
         border-right: 1px solid var(--border);
+        height: 100vh !important;
         overflow-y: auto !important;
+    }
+    /* Streamlit's sidebar is a flex layout internally — without min-height:0
+       on the inner wrapper, a flex child refuses to shrink below its content
+       size (a classic flexbox gotcha), which silently defeats overflow-y:auto
+       on the section above no matter what. This forces it to actually scroll. */
+    [data-testid="stSidebar"] > div {
+        min-height: 0 !important;
+        height: auto !important;
+        overflow: visible !important;
     }
     /* Make the scrollbar itself visible/obvious rather than relying on the
        browser default, which some OS/browser combos hide until hovered. */
