@@ -1,18 +1,34 @@
 name: Keep Streamlit app awake
 
-# Streamlit Community Cloud puts apps to sleep after a stretch of no
-# visitors, requiring a manual "wake up" click before anyone can use them.
-# This just visits the app on a schedule so it never goes quiet long enough
-# to hibernate. Free on a public repo (unlimited Actions minutes).
+# Streamlit Community Cloud puts apps to sleep after a stretch with no real
+# visitors, requiring a manual "wake up" click. A plain HTTP request doesn't
+# count as a visit (it only fetches the empty HTML shell), so this opens the
+# app in a headless browser, wakes it if needed, and stays connected briefly.
+#
+# Scheduled runs are best-effort: GitHub often delays them by hours, so this
+# is set to hourly (at an off-peak minute) to leave a wide safety margin.
+# Free on a public repo. Can also be run by hand from the Actions tab.
 
 on:
   schedule:
-    - cron: "*/30 * * * *"
+    - cron: "23 * * * *"
   workflow_dispatch: {}
 
 jobs:
-  ping:
+  visit:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - name: Ping the app
-        run: curl -sS -m 60 "https://po-twin.streamlit.app/" -o /dev/null
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install a headless browser
+        run: |
+          pip install playwright
+          playwright install --with-deps chromium
+
+      - name: Visit the app like a real user
+        run: python .github/scripts/visit_app.py
