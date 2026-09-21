@@ -290,7 +290,7 @@ KNOWLEDGE_TOPICS: list[KnowledgeTopic] = [
 
 **Next step:** Draw one order-to-activate swimlane across BSS → OSS → twin → network and identify the weakest handoff.
 
-*14+ years across catalog, ordering, billing, and charging on operator programmes including Vodafone Germany and Comcast.*""",
+*16+ years across catalog, ordering, billing, and charging on operator programmes including Vodafone Germany and Comcast.*""",
     ),
     KnowledgeTopic(
         id="integration",
@@ -332,7 +332,7 @@ KNOWLEDGE_TOPICS: list[KnowledgeTopic] = [
         id="about",
         keywords=["who are you", "about you", "your background", "experience", "introduce", "tell me about"],
         weight=5,
-        response=f"""I'm **{PERSONA['name']}** — a **{PERSONA['title']}** with **14+ years** in telecom BSS and digital transformation.
+        response=f"""I'm **{PERSONA['name']}** — a **{PERSONA['title']}** with **16+ years** in telecom BSS and digital transformation.
 
 **What I do:**
 - Bridge business and engineering on large-scale catalog, ordering, billing, and charging programmes
@@ -695,7 +695,7 @@ def get_knowledge_response(prompt: str) -> tuple[str, Optional[str]]:
 
 def _build_system_prompt() -> str:
     topic_ids = ", ".join(t.id for t in KNOWLEDGE_TOPICS)
-    return f"""You are the AI digital twin of {PERSONA['name']}, an {PERSONA['title']} with 14+ years in telecom BSS.
+    return f"""You are the AI digital twin of {PERSONA['name']}, an {PERSONA['title']} with 16+ years in telecom BSS.
 
 Speak in first person as Shrirang. Be concise, structured, and practical — like an experienced, AI-savvy Product Manager in a stakeholder meeting.
 

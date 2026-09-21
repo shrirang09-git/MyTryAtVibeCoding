@@ -506,7 +506,7 @@ with st.container(border=True, key="header_card"):
     st.markdown(
         """
         <div class="stats-strip">
-            <div class="stat"><div class="stat-num">14+</div><div class="stat-label">Years Experience</div></div>
+            <div class="stat"><div class="stat-num">16+</div><div class="stat-label">Years Experience</div></div>
             <div class="stat"><div class="stat-num">20+</div><div class="stat-label">Products Owned</div></div>
             <div class="stat"><div class="stat-num">3</div><div class="stat-label">Certifications</div></div>
             <div class="stat"><div class="stat-num">4+</div><div class="stat-label">Projects Delivered Across Continents</div></div>
