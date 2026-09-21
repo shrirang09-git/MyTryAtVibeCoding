@@ -160,7 +160,7 @@ st.markdown(
         border-top: 1px solid var(--border);
     }
     .stat {
-        text-align: center; min-width: 130px;
+        text-align: center; min-width: 130px; flex: 1 1 200px; max-width: 340px;
         background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
         border-radius: var(--radius-md);
         padding: 0.75rem 1rem;
@@ -508,8 +508,6 @@ with st.container(border=True, key="header_card"):
         <div class="stats-strip">
             <div class="stat"><div class="stat-num">16+</div><div class="stat-label">Years Experience</div></div>
             <div class="stat"><div class="stat-num">5+</div><div class="stat-label">Project Deliveries, Scoping to Post-Production</div></div>
-            <div class="stat"><div class="stat-num">3</div><div class="stat-label">Certifications</div></div>
-            <div class="stat"><div class="stat-num">4+</div><div class="stat-label">Projects Delivered Across Continents</div></div>
         </div>
         """,
         unsafe_allow_html=True,
