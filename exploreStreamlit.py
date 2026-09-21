@@ -156,7 +156,7 @@ st.markdown(
 
     .stats-strip {
         display: flex; justify-content: space-around; flex-wrap: wrap;
-        gap: 0.85rem; margin: 1.1rem 0.5rem 0.4rem; padding-top: 1rem;
+        gap: 0.85rem; margin: 1.1rem 0.5rem 0; padding: 1rem 0 1.2rem;
         border-top: 1px solid var(--border);
     }
     .stat {
