@@ -16,7 +16,7 @@ from persona import (
 load_dotenv()
 
 # Temporarily showing Recruiter Screening only — flip back to True to
-# restore the AI PM Deep-Dive mode switch.
+# restore the PM Deep-Dive mode switch.
 PM_MODE_ENABLED = False
 
 # Avatar — kept here so cloud deploy never depends on persona.py exports
@@ -53,7 +53,7 @@ ASSISTANT_AVATAR = get_avatar()
 # ---------------------------------------------------------------------------
 
 st.set_page_config(
-    page_title="Shrirang AI PM Twin",
+    page_title="Shrirang PM Twin",
     page_icon="🎯",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -427,7 +427,7 @@ with st.sidebar:
     st.divider()
     st.markdown(
         '<p class="footer-note">Built by Shrirang Deshpande · '
-        "CSPO · SAFe POPM · Telecom BSS AI Product Manager · "
+        "CSPO · SAFe POPM · Telecom BSS Product Manager · "
         "This twin reflects professional PM thinking — not official employer advice.</p>",
         unsafe_allow_html=True,
     )
@@ -454,11 +454,11 @@ if PM_MODE_ENABLED:
                 st.rerun()
         with mode_col2:
             if st.button(
-                "🎯 AI PM Deep-Dive",
+                "🎯 PM Deep-Dive",
                 use_container_width=True,
-                type="primary" if st.session_state.mode == "AI PM Deep-Dive" else "secondary",
+                type="primary" if st.session_state.mode == "PM Deep-Dive" else "secondary",
             ):
-                st.session_state.mode = "AI PM Deep-Dive"
+                st.session_state.mode = "PM Deep-Dive"
                 st.rerun()
 else:
     st.session_state.mode = "Recruiter Screening"
@@ -486,7 +486,7 @@ with st.container(border=True, key="header_card"):
                 unsafe_allow_html=True,
             )
         else:
-            st.markdown('<p class="main-header">AI Product Manager Twin</p>', unsafe_allow_html=True)
+            st.markdown('<p class="main-header">Product Manager Twin</p>', unsafe_allow_html=True)
             st.markdown(
                 '<p class="sub-header">Ask about roadmapping, prioritisation, PRDs, metrics, or AI in '
                 "product management — answered the way an AI-driven Telecom PM would.</p>",

@@ -1,4 +1,4 @@
-"""AI Product Manager digital twin — persona, knowledge base, and response engine."""
+"""Product Manager digital twin — persona, knowledge base, and response engine."""
 
 from __future__ import annotations
 
@@ -36,8 +36,8 @@ def has_avatar_image() -> bool:
 
 PERSONA = {
     "name": "Shrirang Deshpande",
-    "title": "AI Product Manager",
-    "tagline": "Telecom BSS · AI-Driven Product Strategy · Digital Transformation",
+    "title": "Product Manager",
+    "tagline": "Telecom BSS · Product Strategy · Digital Transformation",
     "linkedin": "https://www.linkedin.com/in/shrirang-deshpande-14870034/",
     "email": "shrirang09@gmail.com",
     "calendly": "https://calendly.com/shrirang09",
@@ -695,7 +695,7 @@ def get_knowledge_response(prompt: str) -> tuple[str, Optional[str]]:
 
 def _build_system_prompt() -> str:
     topic_ids = ", ".join(t.id for t in KNOWLEDGE_TOPICS)
-    return f"""You are the AI digital twin of {PERSONA['name']}, an {PERSONA['title']} with 16+ years in telecom BSS.
+    return f"""You are the AI digital twin of {PERSONA['name']}, a {PERSONA['title']} with 16+ years in telecom BSS.
 
 Speak in first person as Shrirang. Be concise, structured, and practical — like an experienced, AI-savvy Product Manager in a stakeholder meeting.
 
