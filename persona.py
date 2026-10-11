@@ -392,10 +392,9 @@ SCREENING_FACTS = {
         "which is handy if the role touches anything public-sector or government-adjacent."
     ),
     "leaving": (
-        "Honestly? Amdocs is going through some restructuring at the moment. Nobody's told me "
-        "I'll be impacted, and I want to be upfront about that — this isn't me running from "
-        "something. I'd just rather be proactive and start exploring what's next on my own "
-        "terms, rather than wait and see how things shake out."
+        "There's some restructuring going on at Amdocs at the moment, and I haven't been told "
+        "I'm affected. But I'd rather be proactive than wait and see, so I'm taking the time "
+        "to look at what comes next on my own terms."
     ),
     "next_role": (
         "I'm mainly targeting Product Owner and Product Manager roles, ideally in Telco or "
